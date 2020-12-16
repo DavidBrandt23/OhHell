@@ -14,7 +14,11 @@ public class NetworkManagerOhHell : NetworkManager
         Transform start = numPlayers == 0 ? leftRacketSpawn : rightRacketSpawn;
         GameObject player = Instantiate(playerPrefab, start.position, start.rotation);
         NetworkServer.AddPlayerForConnection(conn, player);
+
         player.GetComponent<PlayerOhHell>().CreateDialog(numPlayers);
+       // GameObject ob = GameObject.Instantiate(spawnPrefabs.Find(prefab => prefab.name == "TestObject"), player.transform);
+       // NetworkServer.Spawn(ob);
+
         // spawn ball if two players
         if (numPlayers == 2)
         {

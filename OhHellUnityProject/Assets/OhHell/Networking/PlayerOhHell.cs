@@ -22,7 +22,13 @@ public class PlayerOhHell : NetworkBehaviour
     public void CreateDialog(int amount)
     {
         Debug.Log("Took damage:" + amount);
-        GameObject.Instantiate(test, transform);
-        GameObject.Instantiate(test);
+        if (isLocalPlayer)
+        {
+            GameObject ob = GameObject.Instantiate(test, transform);
+
+        }
+      //  NetworkServer.Spawn(ob);
+        //GameObject.Instantiate(test, transform);
+        //GameObject.Instantiate(test);
     }
 }

@@ -900,6 +900,7 @@ MonoBehaviour:
   playerSpawnMethod: 0
   spawnPrefabs:
   - {fileID: 1080679924113744, guid: 5f7a7f34494ed40268eff49dbf9168bf, type: 3}
+  - {fileID: 1489227970196358422, guid: cc82394702e9fa64faa642a806384d5a, type: 3}
   leftRacketSpawn: {fileID: 473997961}
   rightRacketSpawn: {fileID: 1397990096}
 --- !u!114 &1886246553
