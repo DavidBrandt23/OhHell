@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerOhHell : NetworkBehaviour
 {
     public float speed = 30;
     public Rigidbody2D rigidbody2d;
-    public GameObject test;
+    public GameObject playerViewSelfPrefab;
+    public GameObject playerViewOtherPrefab;
 
     // need to use FixedUpdate for rigidbody
     void FixedUpdate()
@@ -24,7 +26,16 @@ public class PlayerOhHell : NetworkBehaviour
         Debug.Log("Took damage:" + amount);
         if (isLocalPlayer)
         {
-            GameObject ob = GameObject.Instantiate(test, transform);
+            GameObject ob = GameObject.Instantiate(playerViewSelfPrefab);
+            Text text = GameObject.Find("PVtext").GetComponent<Text>();
+            text.text = "You are player " + amount;
+
+        }
+        else
+        {
+            GameObject ob = GameObject.Instantiate(playerViewOtherPrefab);
+            Text text = GameObject.Find("PVOtext").GetComponent<Text>();
+            text.text = "Other player is" + amount;
 
         }
       //  NetworkServer.Spawn(ob);

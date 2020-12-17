@@ -22,8 +22,8 @@ public class NetworkManagerOhHell : NetworkManager
         // spawn ball if two players
         if (numPlayers == 2)
         {
-            ball = Instantiate(spawnPrefabs.Find(prefab => prefab.name == "Ball"));
-            NetworkServer.Spawn(ball);
+            //ball = Instantiate(spawnPrefabs.Find(prefab => prefab.name == "Ball"));
+            //NetworkServer.Spawn(ball);
         }
     }
 

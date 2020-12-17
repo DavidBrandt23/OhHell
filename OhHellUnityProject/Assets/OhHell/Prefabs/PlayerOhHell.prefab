@@ -165,7 +165,10 @@ MonoBehaviour:
   syncInterval: 0.1
   speed: 1500
   rigidbody2d: {fileID: 3799349408759793039}
-  test: {fileID: 1489227970196358422, guid: cc82394702e9fa64faa642a806384d5a, type: 3}
+  playerViewSelfPrefab: {fileID: 4570636450080929514, guid: 9d8c29cc2c9a38044adc6ec10c5a088c,
+    type: 3}
+  playerViewOtherPrefab: {fileID: 7480929309595065921, guid: 3d6eae2546ccb2b458cacd8cbbd51bd0,
+    type: 3}
 --- !u!114 &3863921655044878549
 MonoBehaviour:
   m_ObjectHideFlags: 0
