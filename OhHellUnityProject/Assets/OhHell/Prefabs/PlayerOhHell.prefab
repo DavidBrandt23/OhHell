@@ -10,11 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3749146575103298911}
   - component: {fileID: 3961603602918224285}
-  - component: {fileID: 3805736207850639645}
-  - component: {fileID: 3799349408759793039}
   - component: {fileID: 3863072647152467613}
   - component: {fileID: -3985759756229521618}
-  - component: {fileID: 3863921655044878549}
   m_Layer: 0
   m_Name: PlayerOhHell
   m_TagString: Untagged
@@ -43,7 +40,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3750762416094749621}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -86,53 +83,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &3805736207850639645
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3750762416094749621}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2, y: 4}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2, y: 4}
-  m_EdgeRadius: 0
---- !u!50 &3799349408759793039
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3750762416094749621}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 1
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 4
 --- !u!114 &3863072647152467613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,26 +114,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   speed: 1500
-  rigidbody2d: {fileID: 3799349408759793039}
-  playerViewSelfPrefab: {fileID: 4570636450080929514, guid: 9d8c29cc2c9a38044adc6ec10c5a088c,
+  rigidbody2d: {fileID: 0}
+  playerViewSelfPrefab: {fileID: 1368636928231902751, guid: 648d0116f2ba6e24da5ad34091b600eb,
     type: 3}
   playerViewOtherPrefab: {fileID: 7480929309595065921, guid: 3d6eae2546ccb2b458cacd8cbbd51bd0,
     type: 3}
---- !u!114 &3863921655044878549
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3750762416094749621}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0
-  clientAuthority: 1
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01

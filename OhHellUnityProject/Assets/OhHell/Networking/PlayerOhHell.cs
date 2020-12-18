@@ -10,36 +10,36 @@ public class PlayerOhHell : NetworkBehaviour
     public Rigidbody2D rigidbody2d;
     public GameObject playerViewSelfPrefab;
     public GameObject playerViewOtherPrefab;
-
-    // need to use FixedUpdate for rigidbody
+    private GameObject handUI;
+    
     void FixedUpdate()
     {
-        // only let the local player control the racket.
-        // don't control other player's rackets
-        if (isLocalPlayer)
-            rigidbody2d.velocity = new Vector2(0, Input.GetAxisRaw("Vertical")) * speed * Time.fixedDeltaTime;
     }
 
+
     [ClientRpc]
-    public void CreateDialog(int amount)
+    public void SetHand(List<Card> hand)
     {
-        Debug.Log("Took damage:" + amount);
+        if (isLocalPlayer)
+        {
+            handUI.GetComponent<CardHandBehavior>().SetCards(hand);
+        }
+    }
+    [ClientRpc]
+    public void InitializeUI(int amount)
+    {
         if (isLocalPlayer)
         {
             GameObject ob = GameObject.Instantiate(playerViewSelfPrefab);
-            Text text = GameObject.Find("PVtext").GetComponent<Text>();
-            text.text = "You are player " + amount;
+            handUI = ob;
 
         }
         else
         {
-            GameObject ob = GameObject.Instantiate(playerViewOtherPrefab);
-            Text text = GameObject.Find("PVOtext").GetComponent<Text>();
-            text.text = "Other player is" + amount;
-
+          //  GameObject ob = GameObject.Instantiate(playerViewOtherPrefab);
+           // Text text = GameObject.Find("PVOtext").GetComponent<Text>();
+           // text.text = "Other player is" + amount;
+       //    (NetworkManager. as NetworkManagerOhHell).CommandOne();
         }
-      //  NetworkServer.Spawn(ob);
-        //GameObject.Instantiate(test, transform);
-        //GameObject.Instantiate(test);
     }
 }

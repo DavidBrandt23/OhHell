@@ -1,38 +1,46 @@
 ﻿using Mirror;
+using System.Collections.Generic;
 using UnityEngine;
 
 [AddComponentMenu("")]
 public class NetworkManagerOhHell : NetworkManager
 {
-    public Transform leftRacketSpawn;
-    public Transform rightRacketSpawn;
-    GameObject ball;
+    private List<PlayerOhHell> players;
+    public override void Start()
+    {
+        base.Start();
+        players = new List<PlayerOhHell>();
+    }
 
+    [Command]
+    public void CommandOne()
+    {
+        Debug.Log("command called");
+    }
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
-        // add player at correct spawn position
-        Transform start = numPlayers == 0 ? leftRacketSpawn : rightRacketSpawn;
-        GameObject player = Instantiate(playerPrefab, start.position, start.rotation);
+
+        GameObject player = Instantiate(playerPrefab);
         NetworkServer.AddPlayerForConnection(conn, player);
-
-        player.GetComponent<PlayerOhHell>().CreateDialog(numPlayers);
-       // GameObject ob = GameObject.Instantiate(spawnPrefabs.Find(prefab => prefab.name == "TestObject"), player.transform);
-       // NetworkServer.Spawn(ob);
-
-        // spawn ball if two players
-        if (numPlayers == 2)
+        player.GetComponent<PlayerOhHell>().InitializeUI(1);
+        players.Add(player.GetComponent<PlayerOhHell>());
+        if(numPlayers == 2)
         {
-            //ball = Instantiate(spawnPrefabs.Find(prefab => prefab.name == "Ball"));
-            //NetworkServer.Spawn(ball);
+            StartGame();
+        }
+    }
+
+    private void StartGame()
+    {
+        Deck deck = new Deck();
+        foreach(PlayerOhHell player in players)
+        {
+            player.SetHand(deck.DrawHand(6));
         }
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        // destroy ball
-        if (ball != null)
-            NetworkServer.Destroy(ball);
-
         // call base functionality (actually destroys the player)
         base.OnServerDisconnect(conn);
     }

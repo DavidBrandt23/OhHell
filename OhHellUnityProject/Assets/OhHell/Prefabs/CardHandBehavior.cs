@@ -39,6 +39,15 @@ public class Deck
         return card;
     }
 
+    public List<Card> DrawHand(int numCards)
+    {
+        List<Card> hand = new List<Card>();
+        for (int i = 0; i < numCards; i++)
+        {
+            hand.Add(DrawCard());
+        }
+        return hand;
+    }
 }
 public class CardHandBehavior : MonoBehaviour
 {
@@ -48,7 +57,7 @@ public class CardHandBehavior : MonoBehaviour
     void Start()
     {
         List<Card> newHand = GetRandomHand();
-        SetCards(newHand);
+       // SetCards(newHand);
     }
 
     public void SetCards(List<Card> newCards)
@@ -71,13 +80,8 @@ public class CardHandBehavior : MonoBehaviour
     }
     private List<Card> GetRandomHand()
     {
-        List<Card> hand = new List<Card>();
         Deck deck = new Deck();
-        for (int i = 0; i < 6; i++)
-        {
-            hand.Add(deck.DrawCard());
-        }
-        return hand;
+        return deck.DrawHand(6);
     }
 
     void Update()
