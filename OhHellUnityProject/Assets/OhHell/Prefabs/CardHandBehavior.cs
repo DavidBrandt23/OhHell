@@ -53,11 +53,12 @@ public class CardHandBehavior : MonoBehaviour
 {
     public List<Card> Cards;
     public GameObject CardPrefab;
-    // Start is called before the first frame update
-    void Start()
+    public CardEvent ClickCardEvent;
+
+    private void Awake()
     {
+        ClickCardEvent = new CardEvent();
         List<Card> newHand = GetRandomHand();
-       // SetCards(newHand);
     }
 
     public void SetCards(List<Card> newCards)
@@ -66,17 +67,25 @@ public class CardHandBehavior : MonoBehaviour
 
         foreach (Transform child in transform)
         {
-            GameObject.Destroy(child.gameObject);
+            Destroy(child.gameObject);
         }
+
         float cardSpacing = 12.0f;
         float firstCardOffset = -1 * (Cards.Count - 1) / 2.0f * cardSpacing;
         for (int i = 0; i < Cards.Count; i++)
         {
             GameObject newCard = Instantiate(CardPrefab, transform);
-            newCard.GetComponent<CardVisualBehavior>().SetCard(Cards[i]);
+            CardVisualBehavior cardVisualBehavior = newCard.GetComponent<CardVisualBehavior>();
+            cardVisualBehavior.SetCard(Cards[i]);
+            cardVisualBehavior.cardClicked.AddListener(OnCardClick);
 
             newCard.transform.localPosition = new Vector3(firstCardOffset + i * cardSpacing, 0.0f, 0.0f);
         }
+    }
+
+    private void OnCardClick(Card card)
+    {
+        ClickCardEvent.Invoke(card);
     }
     private List<Card> GetRandomHand()
     {
@@ -88,8 +97,8 @@ public class CardHandBehavior : MonoBehaviour
     {
         if (Input.GetKeyUp("space"))
         {
-            List<Card> newHand = GetRandomHand();
-            SetCards(newHand);
+           // List<Card> newHand = GetRandomHand();
+           // SetCards(newHand);
         }
     }
 

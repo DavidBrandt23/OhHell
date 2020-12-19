@@ -6,17 +6,18 @@ using UnityEngine;
 public class NetworkManagerOhHell : NetworkManager
 {
     private List<PlayerOhHell> players;
+
     public override void Start()
     {
         base.Start();
         players = new List<PlayerOhHell>();
     }
 
-    [Command]
-    public void CommandOne()
-    {
-        Debug.Log("command called");
-    }
+    //[Command]
+    //public void CommandOne()
+    //{
+    //    Debug.Log("command called");
+    //}
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
 
@@ -32,10 +33,16 @@ public class NetworkManagerOhHell : NetworkManager
 
     private void StartGame()
     {
+        GameObject gameManagerOb = Instantiate(spawnPrefabs.Find(prefab => prefab.name == "GameManager"));
+        NetworkServer.Spawn(gameManagerOb);
+        GameManager gameManger = gameManagerOb.GetComponent<GameManager>();
         Deck deck = new Deck();
-        foreach(PlayerOhHell player in players)
+        foreach (PlayerOhHell player in players)
         {
             player.SetHand(deck.DrawHand(6));
+            player.SetGameManager(gameManger);
+
+            gameManger.players.Add(player);
         }
     }
 

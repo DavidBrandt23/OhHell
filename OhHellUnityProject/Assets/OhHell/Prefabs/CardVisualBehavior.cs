@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum CardSuit
 {
@@ -25,10 +26,13 @@ public class Card
 
     public string ToString()
     {
-        return "suit= " + Suit + "  power= "+Power;
+        return Suit + " " + Power;
     }
     public CardSuit Suit;
     public int Power;
+}
+public class CardEvent : UnityEvent<Card>
+{
 }
 
 public class CardVisualBehavior : MonoBehaviour
@@ -36,12 +40,16 @@ public class CardVisualBehavior : MonoBehaviour
     public List<Sprite> cardSprites;
     private Card myCard;
     private SpriteRenderer spriteRenderer;
-    
-    public void Start()
+    public bool DefaultOn;
+    public CardEvent cardClicked;
+    public void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        cardClicked = new CardEvent();
+        if (DefaultOn)
+        {
+            SetCard(new Card(CardSuit.Spade, 13));
+        }
 
-        SetCard(new Card(CardSuit.Heart, 3));
     }
     public void SetCard(Card card)
     {
@@ -50,6 +58,7 @@ public class CardVisualBehavior : MonoBehaviour
     }
     private void SetSprite(CardSuit suit, int cardPower)
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = GetSprite(suit, cardPower);
     }
     private Sprite GetSprite(CardSuit suit, int cardPower)
@@ -67,14 +76,15 @@ public class CardVisualBehavior : MonoBehaviour
 
     void OnMouseExit()
     {
-        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f);
+        GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f);
         //The mouse is no longer hovering over the GameObject so output this message each frame
        // Debug.Log("Mouse is no longer on GameObject.");
     }
-
+    private void OnMouseDown()
+    {
+    }
     private void OnMouseUp()
     {
-
-        Debug.Log(myCard.ToString() + "  clicked");
+        cardClicked.Invoke(myCard);
     }
 }

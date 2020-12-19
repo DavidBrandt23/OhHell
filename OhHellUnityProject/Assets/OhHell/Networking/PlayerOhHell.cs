@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,11 +12,11 @@ public class PlayerOhHell : NetworkBehaviour
     public GameObject playerViewSelfPrefab;
     public GameObject playerViewOtherPrefab;
     private GameObject handUI;
-    
+    private GameManager gameManager;
+    private OtherPlayerViewBehavior otherPlayerViewBehavior;
     void FixedUpdate()
     {
     }
-
 
     [ClientRpc]
     public void SetHand(List<Card> hand)
@@ -30,9 +31,12 @@ public class PlayerOhHell : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            GameObject ob = GameObject.Instantiate(playerViewSelfPrefab);
-            handUI = ob;
-
+            GameObject myPlayerUI = Instantiate(playerViewSelfPrefab);
+            GameObject otherPlayerUI = Instantiate(playerViewOtherPrefab);
+            otherPlayerViewBehavior = otherPlayerUI.GetComponent<OtherPlayerViewBehavior>();
+            handUI = myPlayerUI;
+            CardHandBehavior cardHandBehavior = myPlayerUI.GetComponent<CardHandBehavior>();
+            cardHandBehavior.ClickCardEvent.AddListener(OnCardChosen);
         }
         else
         {
@@ -40,6 +44,32 @@ public class PlayerOhHell : NetworkBehaviour
            // Text text = GameObject.Find("PVOtext").GetComponent<Text>();
            // text.text = "Other player is" + amount;
        //    (NetworkManager. as NetworkManagerOhHell).CommandOne();
+        }
+    }
+
+    private void OnCardChosen(Card card)
+    {
+        CommandOne(card);
+    }
+
+    [Command]
+    public void CommandOne(Card card)
+    {
+        //Debug.Log("command called with card: " + card.ToString());
+        gameManager.CardChosen(this, card);
+    }
+    public void SetGameManager(GameManager gameManagerParam)
+    {
+        gameManager = gameManagerParam;
+    }
+
+    [ClientRpc]
+    public void Display(string message)
+    {
+        if (isLocalPlayer)
+        {
+            otherPlayerViewBehavior.messageDisplayer.SetMessage(message);
+
         }
     }
 }
