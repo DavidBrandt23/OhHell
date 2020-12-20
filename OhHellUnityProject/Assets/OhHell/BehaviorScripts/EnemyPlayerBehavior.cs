@@ -8,6 +8,8 @@ public class EnemyPlayerBehavior : MonoBehaviour
     public GameObject CardTargetPoint;
     public GameObject CardPrefab;
 
+    private GameObject playedCard;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,10 +28,10 @@ public class EnemyPlayerBehavior : MonoBehaviour
     
     private void PlayCard(Card card)
     {
-        GameObject cardOb = Instantiate(CardPrefab);
-        cardOb.GetComponent<CardVisualBehavior>().SetCard((card));
-        cardOb.transform.position = CardSpawnPoint.transform.position;
-        MoveToPoint moveToPoint = cardOb.AddComponent<MoveToPoint>();
+        playedCard = Instantiate(CardPrefab);
+        playedCard.GetComponent<CardVisualBehavior>().SetCard((card));
+        playedCard.transform.position = CardSpawnPoint.transform.position;
+        MoveToPoint moveToPoint = playedCard.AddComponent<MoveToPoint>();
         moveToPoint.targetPoint = CardTargetPoint.transform.position;
         moveToPoint.speed = 1.0f;
     }

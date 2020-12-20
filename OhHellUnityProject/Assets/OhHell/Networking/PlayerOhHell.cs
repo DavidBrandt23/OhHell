@@ -7,60 +7,48 @@ using UnityEngine.UI;
 
 public class PlayerOhHell : NetworkBehaviour
 {
-    public float speed = 30;
-    public Rigidbody2D rigidbody2d;
     public GameObject playerViewSelfPrefab;
     public GameObject playerViewOtherPrefab;
-    private GameObject handUI;
-    private GameManager gameManager;
+
+    [SyncVar(hook = nameof(SetPlayerName))]
+    public string PlayerName;
+
+    [SyncVar]
+    public uint gameManagerNetId;
+
+    [SyncVar(hook = nameof(SetIsMyTurn))]
+    public bool IsMyTurn;
+
     private OtherPlayerViewBehavior otherPlayerViewBehavior;
+    private PlayerSelfViewBehavior playerSelfViewBehavior;
+
     void FixedUpdate()
     {
     }
-
+    void SetPlayerName(string oldColor, string newColor)
+    {
+        PlayerName = newColor;
+        if (!isLocalPlayer && otherPlayerViewBehavior != null)
+        {
+            otherPlayerViewBehavior.UpdatePlayerName(PlayerName);
+        }
+    }
+    void SetIsMyTurn(bool oldColor, bool newColor)
+    {
+        IsMyTurn = newColor;
+        if (isLocalPlayer && playerSelfViewBehavior != null)
+        {
+            playerSelfViewBehavior.UpdateTurnUI(IsMyTurn);
+        }
+    }
+    //On client
     [ClientRpc]
-    public void SetHand(List<Card> hand)
+    public void RoundStart(List<Card> hand)
     {
         if (isLocalPlayer)
         {
-            handUI.GetComponent<CardHandBehavior>().SetCards(hand);
+            playerSelfViewBehavior.OnNewRound(hand);
         }
-    }
-    [ClientRpc]
-    public void InitializeUI(int amount)
-    {
-        if (isLocalPlayer)
-        {
-            GameObject myPlayerUI = Instantiate(playerViewSelfPrefab);
-            GameObject otherPlayerUI = Instantiate(playerViewOtherPrefab);
-            otherPlayerViewBehavior = otherPlayerUI.GetComponent<OtherPlayerViewBehavior>();
-            handUI = myPlayerUI;
-            CardHandBehavior cardHandBehavior = myPlayerUI.GetComponent<CardHandBehavior>();
-            cardHandBehavior.ClickCardEvent.AddListener(OnCardChosen);
-        }
-        else
-        {
-          //  GameObject ob = GameObject.Instantiate(playerViewOtherPrefab);
-           // Text text = GameObject.Find("PVOtext").GetComponent<Text>();
-           // text.text = "Other player is" + amount;
-       //    (NetworkManager. as NetworkManagerOhHell).CommandOne();
-        }
-    }
-
-    private void OnCardChosen(Card card)
-    {
-        CommandOne(card);
-    }
-
-    [Command]
-    public void CommandOne(Card card)
-    {
-        //Debug.Log("command called with card: " + card.ToString());
-        gameManager.CardChosen(this, card);
-    }
-    public void SetGameManager(GameManager gameManagerParam)
-    {
-        gameManager = gameManagerParam;
     }
 
     [ClientRpc]
@@ -68,8 +56,88 @@ public class PlayerOhHell : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            otherPlayerViewBehavior.messageDisplayer.SetMessage(message);
+            //otherPlayerViewBehavior.messageDisplayer.SetMessage(message);
 
         }
     }
+
+    [ClientRpc]
+    public void YourTurn()
+    {
+        if (isLocalPlayer)
+        {
+           // playerSelfViewBehavior.OnMyTurn();
+        }
+    }
+
+    [ClientRpc]
+    public void PlayCard(Card card)
+    {
+        if (!isLocalPlayer)
+        {
+            otherPlayerViewBehavior.PlayCard(card);
+        }
+    }
+
+    [ClientRpc]
+    public void InitializeUI(uint amount)
+    {
+        gameManagerNetId =  amount;
+        if (isLocalPlayer)
+        {
+            GameObject myPlayerUI = Instantiate(playerViewSelfPrefab); ;
+            playerSelfViewBehavior = myPlayerUI.GetComponent<PlayerSelfViewBehavior>();
+            playerSelfViewBehavior.Initialize();
+            playerSelfViewBehavior.UpdateTurnUI(IsMyTurn);
+            playerSelfViewBehavior.CardSelectedEvent.AddListener(OnCardChosen);
+
+            // GameObject otherPlayerUI = Instantiate(playerViewOtherPrefab);
+            // otherPlayerViewBehavior = otherPlayerUI.GetComponent<OtherPlayerViewBehavior>();
+
+        }
+        else
+        {
+            GameObject ob = Instantiate(playerViewOtherPrefab);
+            otherPlayerViewBehavior = ob.GetComponent<OtherPlayerViewBehavior>();
+            otherPlayerViewBehavior.UpdatePlayerName(PlayerName);
+            ob.transform.position = GetGameManager().GetPlayerPosition(this);
+           // Text text = GameObject.Find("PVOtext").GetComponent<Text>();
+           // text.text = "Other player is" + amount;
+           //    (NetworkManager. as NetworkManagerOhHell).CommandOne();
+        }
+        if(1 == netId)
+        {
+            Startup();
+        }
+    }
+    [Command]
+    private void Startup()
+    {
+        GetGameManager().StartUp();
+    }
+
+    private void OnCardChosen(GameObject sourceObj, Card card)
+    {
+        CmdCardChosen(card);
+    }
+
+    
+
+
+    //SERVER
+    [Command]
+    public void CmdCardChosen(Card card)
+    {
+        GetGameManager().CardChosen(this, card);
+        PlayCard(card); //send to other clients
+    }
+    private GameManager GetGameManager()
+    {
+        if (NetworkIdentity.spawned.TryGetValue(gameManagerNetId, out NetworkIdentity identity))
+        {
+            return identity.gameObject.GetComponent<GameManager>();
+        }
+        throw new Exception("failed to get gamemanager using ID + "+ gameManagerNetId);
+    }
+
 }

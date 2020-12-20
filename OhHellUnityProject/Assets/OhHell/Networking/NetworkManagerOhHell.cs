@@ -6,6 +6,7 @@ using UnityEngine;
 public class NetworkManagerOhHell : NetworkManager
 {
     private List<PlayerOhHell> players;
+    private GameManager gameManager;
 
     public override void Start()
     {
@@ -23,9 +24,8 @@ public class NetworkManagerOhHell : NetworkManager
 
         GameObject player = Instantiate(playerPrefab);
         NetworkServer.AddPlayerForConnection(conn, player);
-        player.GetComponent<PlayerOhHell>().InitializeUI(1);
         players.Add(player.GetComponent<PlayerOhHell>());
-        if(numPlayers == 2)
+        if(numPlayers == 3)
         {
             StartGame();
         }
@@ -35,16 +35,34 @@ public class NetworkManagerOhHell : NetworkManager
     {
         GameObject gameManagerOb = Instantiate(spawnPrefabs.Find(prefab => prefab.name == "GameManager"));
         NetworkServer.Spawn(gameManagerOb);
-        GameManager gameManger = gameManagerOb.GetComponent<GameManager>();
-        Deck deck = new Deck();
+        gameManager = gameManagerOb.GetComponent<GameManager>();
         foreach (PlayerOhHell player in players)
         {
-            player.SetHand(deck.DrawHand(6));
-            player.SetGameManager(gameManger);
-
-            gameManger.players.Add(player);
+            gameManager.players.Add(player);
+            gameManager.playerIds.Add(player.netId);
+            player.PlayerName = "Player " + player.netId;
         }
+        Invoke("StartGame2", 0.5f);
     }
+    private void StartGame2()
+    {
+        Deck deck = new Deck();
+        players[0].IsMyTurn = true;
+        foreach (PlayerOhHell player in players)
+        {
+            //            player.gameManagerNetId = gameManger.netId;
+            player.InitializeUI(gameManager.netId);
+            player.RoundStart(deck.DrawHand(6));
+
+        }
+        Invoke("StartGame3", 0.5f);
+    }
+
+    private void StartGame3()
+    {
+        //gameManager.StartUp();
+    }
+
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
