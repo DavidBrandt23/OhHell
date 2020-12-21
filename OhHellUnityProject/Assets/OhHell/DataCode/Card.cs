@@ -22,6 +22,35 @@ public class Card
     {
         return Suit + " " + Power;
     }
+
+    public bool IsStronger(Card otherCard, CardSuit? leadSuit, CardSuit? trumpSuit)
+    {
+        if(otherCard == null)
+        {
+            return true;
+        }
+        if (Suit == trumpSuit && otherCard.Suit != trumpSuit)
+        {
+            return true;
+        }
+
+        if (otherCard.Suit == trumpSuit && Suit != trumpSuit)
+        {
+            return false;
+        }
+
+        if (Suit == leadSuit && otherCard.Suit != leadSuit)
+        {
+            return true;
+        }
+
+        if (otherCard.Suit == leadSuit && Suit != leadSuit)
+        {
+            return false;
+        }
+
+        return Power > otherCard.Power;
+    }
 }
 
 public class CardEvent : UnityEvent<GameObject, Card>

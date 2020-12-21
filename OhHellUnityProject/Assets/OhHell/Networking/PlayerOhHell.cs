@@ -80,6 +80,20 @@ public class PlayerOhHell : NetworkBehaviour
     }
 
     [ClientRpc]
+    public void TrickEnd()
+    {
+        if (isLocalPlayer)
+        {
+            playerSelfViewBehavior.TrickEnd();
+            playerSelfViewBehavior.UpdateTurnUI(IsMyTurn);
+        }
+        else
+        {
+            otherPlayerViewBehavior.TrickEnd();
+        }
+    }
+
+    [ClientRpc]
     public void InitializeUI(uint amount)
     {
         gameManagerNetId =  amount;
@@ -101,6 +115,7 @@ public class PlayerOhHell : NetworkBehaviour
             otherPlayerViewBehavior = ob.GetComponent<OtherPlayerViewBehavior>();
             otherPlayerViewBehavior.UpdatePlayerName(PlayerName);
             ob.transform.position = GetGameManager().GetPlayerPosition(this);
+            otherPlayerViewBehavior.CardTargetPoint.transform.position = GetGameManager().GetPlayerCardTargetPosition(this);
            // Text text = GameObject.Find("PVOtext").GetComponent<Text>();
            // text.text = "Other player is" + amount;
            //    (NetworkManager. as NetworkManagerOhHell).CommandOne();
@@ -128,8 +143,8 @@ public class PlayerOhHell : NetworkBehaviour
     [Command]
     public void CmdCardChosen(Card card)
     {
-        GetGameManager().CardChosen(this, card);
         PlayCard(card); //send to other clients
+        GetGameManager().CardChosen(this, card);
     }
     private GameManager GetGameManager()
     {

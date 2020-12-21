@@ -10,6 +10,7 @@ public class OtherPlayerViewBehavior : MonoBehaviour
     public GameObject CardTargetPoint;
     public GameObject CardPrefab;
     public Text PlayerNameText;
+    private GameObject ThrownCard;
     public void UpdatePlayerName(string name)
     {
         PlayerNameText.text = name;
@@ -25,14 +26,27 @@ public class OtherPlayerViewBehavior : MonoBehaviour
     {
 
     }
+
+    public static void ThrowCard(GameObject card, Vector3 targetPoint)
+    {
+        MoveToPoint moveToPoint = card.AddComponent<MoveToPoint>();
+        moveToPoint.targetPoint = targetPoint;
+        moveToPoint.speed = 2.0f;
+    }
     public void PlayCard(Card card)
     {
-        GameObject playedCard;
-        playedCard = Instantiate(CardPrefab);
-        playedCard.GetComponent<CardVisualBehavior>().SetCard((card));
-        playedCard.transform.position = CardSpawnPoint.transform.position;
-        MoveToPoint moveToPoint = playedCard.AddComponent<MoveToPoint>();
-        moveToPoint.targetPoint = CardTargetPoint.transform.position;
-        moveToPoint.speed = 1.0f;
+        ThrownCard = Instantiate(CardPrefab);
+        ThrownCard.GetComponent<CardVisualBehavior>().SetCard((card));
+        ThrownCard.transform.position = CardSpawnPoint.transform.position;
+        ThrowCard(ThrownCard, CardTargetPoint.transform.position);
+    }
+
+    public void TrickEnd()
+    {
+        if(ThrownCard != null)
+        {
+            Destroy(ThrownCard);
+            ThrownCard = null;
+        }
     }
 }

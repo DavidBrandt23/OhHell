@@ -19,7 +19,10 @@ public class CardHandBehavior : MonoBehaviour
             _canChooseCard = value;
             foreach(GameObject ob in cardObjects)
             {
-                ob.GetComponent<SelectableObjectBehavior>().ClickEnabled = _canChooseCard;
+                if (ob)
+                {
+                    ob.GetComponent<SelectableObjectBehavior>().ClickEnabled = _canChooseCard;
+                }
             }
         }
     }
@@ -31,6 +34,7 @@ public class CardHandBehavior : MonoBehaviour
         {
             Deck testDeck = new Deck();
             SetCards(testDeck.DrawHand(6));
+            CanChooseCard = true;
         }
     }
 
@@ -61,10 +65,10 @@ public class CardHandBehavior : MonoBehaviour
         }
     }
 
-    private void OnCardClick(GameObject gameObject, Card card)
+    private void OnCardClick(GameObject sourceCardGameObject, Card card)
     {
-        ClickCardEvent.Invoke(gameObject, card);
-        gameObject.SetActive(false);
+        ClickCardEvent.Invoke(sourceCardGameObject, card);
+        sourceCardGameObject.GetComponent<SelectableObjectBehavior>().ClickEnabled = false;
         CanChooseCard = false;
     }
 

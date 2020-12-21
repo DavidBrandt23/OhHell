@@ -6,14 +6,19 @@ using UnityEngine;
 public class SyncListUInt : SyncList<uint> { }
 public class GameManager : NetworkBehaviour
 {
+    public List<GameObject> PlayerSpawnPoints;
+    public List<GameObject> CardSpawnPoints;
+
     public List<PlayerOhHell> players; //only works on server
     public SyncListUInt playerIds = new SyncListUInt();
-    public List<GameObject> SpawnPoints;
     private int currentTurnPlayerIndex = 0;
+
+    private List<Card> cardsInCenter;
     // Start is called before the first frame update
     public void Awake()
     {
         //players = new SyncList<PlayerOhHell>();
+        cardsInCenter = new List<Card>();
     }
     void Start()
     {
@@ -52,15 +57,23 @@ public class GameManager : NetworkBehaviour
 
     public Vector3 GetPlayerPosition(PlayerOhHell player)
     {
+        return PlayerSpawnPoints[GetPlayerPositionIndex(player)].transform.position;
+    }
+    public Vector3 GetPlayerCardTargetPosition(PlayerOhHell player)
+    {
+        return CardSpawnPoints[GetPlayerPositionIndex(player)].transform.position;
+    }
+    private int GetPlayerPositionIndex(PlayerOhHell player)
+    {
         int playerListIndex = GetPlayerIndex(player);
         int localPlayerListIndex = GetPlayerIndex(GetLocalPlayer());
         int numPlayers = GetLocalPlayerList().Count;
         int playerIndexToUse = playerListIndex - localPlayerListIndex - 1; //index in spawnpoint arr
-        if(playerIndexToUse < 0)
+        if (playerIndexToUse < 0)
         {
             playerIndexToUse = playerIndexToUse + numPlayers;
         }
-        return SpawnPoints[playerIndexToUse].transform.position;
+        return playerIndexToUse;
     }
     private List<PlayerOhHell> GetLocalPlayerList()
     {
@@ -88,18 +101,46 @@ public class GameManager : NetworkBehaviour
          //   localList[i].IsMyTurn = !localList[i].IsMyTurn;
         }
     }
+    private PlayerOhHell TrickWinningPlayer;
+    private Card TrickWinningCard;
+
     public void CardChosen(PlayerOhHell pl, Card card)
     {
         foreach (PlayerOhHell player in players)
         {
             player.Display("Player " + pl.netId + " played a card: " + card.ToString());
         }
+
+        cardsInCenter.Add(card);
+
         players[currentTurnPlayerIndex].IsMyTurn = false;
-        currentTurnPlayerIndex++;
-        if(currentTurnPlayerIndex >= players.Count)
+        if (card.IsStronger(TrickWinningCard, null, null))
         {
-            currentTurnPlayerIndex = 0;
+            TrickWinningCard = card;
+            TrickWinningPlayer = pl;
         }
-        players[currentTurnPlayerIndex].IsMyTurn = true;
+
+        if(cardsInCenter.Count < players.Count)
+        {
+            //advance turn
+            currentTurnPlayerIndex++;
+            if (currentTurnPlayerIndex >= players.Count)
+            {
+                currentTurnPlayerIndex = 0;
+            }
+            players[currentTurnPlayerIndex].IsMyTurn = true;
+        }
+        else
+        {
+            currentTurnPlayerIndex = GetPlayerIndex(TrickWinningPlayer);
+            players[currentTurnPlayerIndex].IsMyTurn = true;
+            TrickWinningPlayer = null;
+            TrickWinningCard = null;
+            foreach (PlayerOhHell player in players)
+            {
+                player.TrickEnd();
+            }
+            cardsInCenter.Clear();
+        }
     }
 }
