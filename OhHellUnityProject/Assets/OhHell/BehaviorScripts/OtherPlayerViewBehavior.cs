@@ -8,8 +8,8 @@ public class OtherPlayerViewBehavior : MonoBehaviour
     public MessageDisplayer messageDisplayer;
     public GameObject CardSpawnPoint;
     public GameObject CardTargetPoint;
-    public GameObject CardPrefab;
     public Text PlayerNameText;
+    public Text ScoreText;
     private GameObject ThrownCard;
     public void UpdatePlayerName(string name)
     {
@@ -26,21 +26,16 @@ public class OtherPlayerViewBehavior : MonoBehaviour
     {
 
     }
-
-    public static void ThrowCard(GameObject card, Vector3 targetPoint)
+    public void UpdateScoreUI(int scor)
     {
-        MoveToPoint moveToPoint = card.AddComponent<MoveToPoint>();
-        moveToPoint.targetPoint = targetPoint;
-        moveToPoint.speed = 2.0f;
+        ScoreText.text = scor.ToString();
     }
+    
     public void PlayCard(Card card)
     {
-        ThrownCard = Instantiate(CardPrefab);
-        ThrownCard.GetComponent<CardVisualBehavior>().SetCard((card));
-        ThrownCard.transform.position = CardSpawnPoint.transform.position;
-        ThrowCard(ThrownCard, CardTargetPoint.transform.position);
+        ThrownCard = GetComponent<CardThrowBehavior>().ThrowCard(card, CardSpawnPoint.transform.position, CardTargetPoint.transform.position);
     }
-
+    
     public void TrickEnd()
     {
         if(ThrownCard != null)

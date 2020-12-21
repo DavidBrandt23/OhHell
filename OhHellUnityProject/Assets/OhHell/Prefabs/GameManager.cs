@@ -14,11 +14,22 @@ public class GameManager : NetworkBehaviour
     private int currentTurnPlayerIndex = 0;
 
     private List<Card> cardsInCenter;
+    [SyncVar]
+    private int LeadingSuit;
+
+    private CardSuit? TrumpSuit;
+    private int CurrentRoundCardNum;
+    private int TricksPlayedThisRound;
+
+
     // Start is called before the first frame update
     public void Awake()
     {
         //players = new SyncList<PlayerOhHell>();
         cardsInCenter = new List<Card>();
+        SetLeadingSuit(null);
+        CurrentRoundCardNum = 6;
+        TricksPlayedThisRound = 0;
     }
     void Start()
     {
@@ -93,34 +104,62 @@ public class GameManager : NetworkBehaviour
         throw new System.Exception("failedto get ID: " + targetID);
     }
 
-    public void StartUp()
-    {
-        List<PlayerOhHell> localList = GetLocalPlayerList();
-        for (int i = 0; i < localList.Count; i++)
-        {
-         //   localList[i].IsMyTurn = !localList[i].IsMyTurn;
-        }
-    }
     private PlayerOhHell TrickWinningPlayer;
     private Card TrickWinningCard;
+    public void BeginGame()
+    {
 
+        foreach (PlayerOhHell player in players)
+        {
+            player.InitializeUI(netId);
+        }
+        StartRound();
+    }
+    private void StartRound()
+    {
+        if (isServer)
+        {
+            Deck deck = new Deck();
+            TricksPlayedThisRound = 0;
+            foreach (PlayerOhHell player in players)
+            {
+                player.RoundStart(deck.DrawHand(CurrentRoundCardNum));
+                player.IsMyTurn = false;
+            }
+            currentTurnPlayerIndex = 0;
+            players[currentTurnPlayerIndex].IsMyTurn = true;
+        }
+
+    }
     public void CardChosen(PlayerOhHell pl, Card card)
     {
+        if (!isServer)
+        {
+            return;
+        }
+        int oldTurnPlayerIndex = currentTurnPlayerIndex;
+        int newTurnPlayerIndex = currentTurnPlayerIndex;
+        bool trickEnd = false, roundEnd = false;
+
         foreach (PlayerOhHell player in players)
         {
             player.Display("Player " + pl.netId + " played a card: " + card.ToString());
         }
 
         cardsInCenter.Add(card);
-
-        players[currentTurnPlayerIndex].IsMyTurn = false;
-        if (card.IsStronger(TrickWinningCard, null, null))
+        if (GetLeadingSuit() == null)
+        {
+            SetLeadingSuit(card.Suit);
+        }
+        
+        if (card.IsStronger(TrickWinningCard, GetLeadingSuit(), null))
         {
             TrickWinningCard = card;
             TrickWinningPlayer = pl;
         }
 
-        if(cardsInCenter.Count < players.Count)
+
+        if (cardsInCenter.Count < players.Count)
         {
             //advance turn
             currentTurnPlayerIndex++;
@@ -128,19 +167,84 @@ public class GameManager : NetworkBehaviour
             {
                 currentTurnPlayerIndex = 0;
             }
-            players[currentTurnPlayerIndex].IsMyTurn = true;
+            newTurnPlayerIndex = currentTurnPlayerIndex;
         }
         else
         {
+            TricksPlayedThisRound++;
             currentTurnPlayerIndex = GetPlayerIndex(TrickWinningPlayer);
-            players[currentTurnPlayerIndex].IsMyTurn = true;
+            TrickWinningPlayer.Score++;
+            newTurnPlayerIndex = currentTurnPlayerIndex;
             TrickWinningPlayer = null;
             TrickWinningCard = null;
+            SetLeadingSuit(null);
+            trickEnd = true;
+            cardsInCenter.Clear();
+            if(TricksPlayedThisRound >= CurrentRoundCardNum)
+            {
+                roundEnd = true;
+            }
+        }
+
+        float delay = 0.1f;
+        if (trickEnd)
+        {
+            delay = 0.5f;
+        }
+        //don't update ismyturn until leading suit set
+        this.StartCoroutine(() =>
+        {
+            CardChosen2(oldTurnPlayerIndex, newTurnPlayerIndex, trickEnd, roundEnd);
+        }, delay);
+    }
+
+    private void CardChosen2(int oldTurnPlayerIndex, int newTurnPlayerIndex, bool trickEnd, bool roundEnd)
+    {
+        players[oldTurnPlayerIndex].IsMyTurn = false;
+        players[newTurnPlayerIndex].IsMyTurn = true;
+        if (trickEnd)
+        {
             foreach (PlayerOhHell player in players)
             {
                 player.TrickEnd();
             }
-            cardsInCenter.Clear();
         }
+        if (roundEnd)
+        {
+            StartRound();
+        }
+    }
+
+    public CardSuit? GetLeadingSuit()
+    {
+        if(LeadingSuit == -1)
+        {
+            return null;
+        }
+        return (CardSuit)LeadingSuit;
+    }
+    private void SetLeadingSuit(CardSuit? suit)
+    {
+        if (suit == null)
+        {
+            LeadingSuit = -1;
+        }
+        else
+        {
+            LeadingSuit = (int)suit;
+        }
+    }
+}
+public static class MonoBehaviourExtension
+{
+    public static Coroutine StartCoroutine(this MonoBehaviour behaviour, System.Action action, float delay)
+    {
+        return behaviour.StartCoroutine(WaitAndDo(delay, action));
+    }
+
+    private static IEnumerator WaitAndDo(float time, System.Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action();
     }
 }

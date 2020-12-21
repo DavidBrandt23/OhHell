@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CardBehavior : MonoBehaviour
 {
-   private Card myCard;
+    private Card myCard;
     public CardEvent CardSelectedEvent ;
     public bool DefaultOn;
     private void Awake()
@@ -32,7 +32,10 @@ public class CardBehavior : MonoBehaviour
     {
 
     }
-
+    public Card GetCard()
+    {
+        return myCard;
+    }
     // Update is called once per frame
     void Update()
     {

@@ -8,6 +8,7 @@ public class PlayerSelfViewBehavior : MonoBehaviour
 {
     public CardHandBehavior cardHandBehavior;
     public Text TurnText;
+    public Text ScoreText;
     public GameObject CardTarget;
 
     public CardEvent CardSelectedEvent;
@@ -20,14 +21,16 @@ public class PlayerSelfViewBehavior : MonoBehaviour
     }
     public void Initialize()
     {
-        cardHandBehavior.CanChooseCard = false;
+        cardHandBehavior.SetSelectableCards(false);
         cardHandBehavior.ClickCardEvent.AddListener(onCardSelected);
     }
     private void onCardSelected(GameObject sourceCardGameObject, Card card)
     {
-        ThrownCard = sourceCardGameObject;
+        //sourceCardGameObject will be destroyed after this
+
+        // ThrownCard = sourceCardGameObject;
         //ThrownCard.transform.SetParent(gameObject.transform); //move out of card hand
-        OtherPlayerViewBehavior.ThrowCard(ThrownCard, CardTarget.transform.position);
+        ThrownCard = GetComponent<CardThrowBehavior>().ThrowCard(card, sourceCardGameObject.transform.position, CardTarget.transform.position); 
 
         CardSelectedEvent.Invoke(sourceCardGameObject, card);
     }
@@ -45,12 +48,18 @@ public class PlayerSelfViewBehavior : MonoBehaviour
         cardHandBehavior.SetCards(newCards);
     }
 
-    public void UpdateTurnUI(bool isMyTurn)
+    public void UpdateTurnUI(bool isMyTurn, CardSuit? leadingSuit)
     {
-        cardHandBehavior.CanChooseCard = isMyTurn;
+        Debug.Log("ismyturn = " + isMyTurn + "  lsuit= " + leadingSuit);
+        cardHandBehavior.SetSelectableCards(isMyTurn, leadingSuit);
         TurnText.enabled = isMyTurn;
     }
-    
+
+    public void UpdateScoreUI(int scor)
+    {
+        ScoreText.text = scor.ToString();
+    }
+
     // Start is called before the first frame update
     void Start()
     {

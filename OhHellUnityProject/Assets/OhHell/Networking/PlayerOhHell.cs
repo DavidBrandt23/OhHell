@@ -15,6 +15,9 @@ public class PlayerOhHell : NetworkBehaviour
 
     [SyncVar]
     public uint gameManagerNetId;
+    
+    [SyncVar(hook = nameof(SetScore))]
+    public int Score;
 
     [SyncVar(hook = nameof(SetIsMyTurn))]
     public bool IsMyTurn;
@@ -28,17 +31,35 @@ public class PlayerOhHell : NetworkBehaviour
     void SetPlayerName(string oldColor, string newColor)
     {
         PlayerName = newColor;
-        if (!isLocalPlayer && otherPlayerViewBehavior != null)
+        if (!isLocalPlayer)
         {
-            otherPlayerViewBehavior.UpdatePlayerName(PlayerName);
+            otherPlayerViewBehavior?.UpdatePlayerName(PlayerName);
         }
     }
     void SetIsMyTurn(bool oldColor, bool newColor)
     {
         IsMyTurn = newColor;
-        if (isLocalPlayer && playerSelfViewBehavior != null)
+        UpdateSelfPlayerUI();
+    }
+
+    private void UpdateSelfPlayerUI()
+    {
+        if (isLocalPlayer)
         {
-            playerSelfViewBehavior.UpdateTurnUI(IsMyTurn);
+            playerSelfViewBehavior?.UpdateTurnUI(IsMyTurn, GetGameManager()?.GetLeadingSuit());
+        }
+    }
+
+    void SetScore(int oldScore, int newScore)
+    {
+        Score = newScore;
+        if (isLocalPlayer)
+        {
+            playerSelfViewBehavior?.UpdateScoreUI(Score);
+        }
+        else
+        {
+            otherPlayerViewBehavior?.UpdateScoreUI(Score);
         }
     }
     //On client
@@ -48,6 +69,8 @@ public class PlayerOhHell : NetworkBehaviour
         if (isLocalPlayer)
         {
             playerSelfViewBehavior.OnNewRound(hand);
+            //right now when dealing hand the new cards are always non-clickable by default so call update
+            UpdateSelfPlayerUI();
         }
     }
 
@@ -85,7 +108,7 @@ public class PlayerOhHell : NetworkBehaviour
         if (isLocalPlayer)
         {
             playerSelfViewBehavior.TrickEnd();
-            playerSelfViewBehavior.UpdateTurnUI(IsMyTurn);
+            UpdateSelfPlayerUI();
         }
         else
         {
@@ -102,7 +125,8 @@ public class PlayerOhHell : NetworkBehaviour
             GameObject myPlayerUI = Instantiate(playerViewSelfPrefab); ;
             playerSelfViewBehavior = myPlayerUI.GetComponent<PlayerSelfViewBehavior>();
             playerSelfViewBehavior.Initialize();
-            playerSelfViewBehavior.UpdateTurnUI(IsMyTurn);
+            UpdateSelfPlayerUI();
+            playerSelfViewBehavior.UpdateScoreUI(Score);
             playerSelfViewBehavior.CardSelectedEvent.AddListener(OnCardChosen);
 
             // GameObject otherPlayerUI = Instantiate(playerViewOtherPrefab);
@@ -116,21 +140,13 @@ public class PlayerOhHell : NetworkBehaviour
             otherPlayerViewBehavior.UpdatePlayerName(PlayerName);
             ob.transform.position = GetGameManager().GetPlayerPosition(this);
             otherPlayerViewBehavior.CardTargetPoint.transform.position = GetGameManager().GetPlayerCardTargetPosition(this);
-           // Text text = GameObject.Find("PVOtext").GetComponent<Text>();
-           // text.text = "Other player is" + amount;
-           //    (NetworkManager. as NetworkManagerOhHell).CommandOne();
+            otherPlayerViewBehavior.UpdateScoreUI(Score);
+            // Text text = GameObject.Find("PVOtext").GetComponent<Text>();
+            // text.text = "Other player is" + amount;
+            //    (NetworkManager. as NetworkManagerOhHell).CommandOne();
         }
-        if(1 == netId)
-        {
-            Startup();
-        }
-    }
-    [Command]
-    private void Startup()
-    {
-        GetGameManager().StartUp();
-    }
 
+    }
     private void OnCardChosen(GameObject sourceObj, Card card)
     {
         CmdCardChosen(card);

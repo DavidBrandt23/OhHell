@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Events;
+using Mirror;
 
 public class Card
 {
@@ -29,6 +30,7 @@ public class Card
         {
             return true;
         }
+
         if (Suit == trumpSuit && otherCard.Suit != trumpSuit)
         {
             return true;
@@ -63,4 +65,16 @@ public enum CardSuit
     Heart,
     Spade,
     Club
+}
+public static class CardSuixxtReaderWriterg
+{
+    public static void WriteCardSuit(this NetworkWriter writer, CardSuit dateTime)
+    {
+        writer.WriteInt64((long)dateTime);
+    }
+
+    public static CardSuit ReadCardSuit(this NetworkReader reader)
+    {
+        return (CardSuit)(reader.ReadInt64());
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,20 +13,43 @@ public class CardHandBehavior : MonoBehaviour
     public CardEvent ClickCardEvent;
     public bool TestMode;
 
-    private bool _canChooseCard;
-    public bool CanChooseCard {
-        get { return _canChooseCard; }
-        set {
-            _canChooseCard = value;
-            foreach(GameObject ob in cardObjects)
+
+    public void SetSelectableCards(bool canSelect, CardSuit? allowedSuit = null)
+    {
+        foreach (GameObject cardObj in cardObjects)
+        {
+            if (cardObj) //in case destroyed and didn't cleanup list
             {
-                if (ob)
+                CardBehavior cardB = cardObj.GetComponent<CardBehavior>();
+                SelectableObjectBehavior selBehave = cardObj.GetComponent<SelectableObjectBehavior>();
+                if (canSelect && (allowedSuit == null || !hasCardOfSuit((CardSuit)allowedSuit) || (cardB.GetCard().Suit == allowedSuit)))
                 {
-                    ob.GetComponent<SelectableObjectBehavior>().ClickEnabled = _canChooseCard;
+                    selBehave.ClickEnabled = true;
+                }
+                else
+                {
+                    selBehave.ClickEnabled = false;
                 }
             }
         }
     }
+    private bool hasCardOfSuit(CardSuit suit)
+    {
+
+        foreach (GameObject cardObj in cardObjects)
+        {
+            if (cardObj) //in case destroyed and didn't cleanup list
+            {
+                CardBehavior cardB = cardObj.GetComponent<CardBehavior>();
+                if(cardB.GetCard().Suit == suit)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void Awake()
     {
         cardObjects = new List<GameObject>();
@@ -34,7 +58,7 @@ public class CardHandBehavior : MonoBehaviour
         {
             Deck testDeck = new Deck();
             SetCards(testDeck.DrawHand(6));
-            CanChooseCard = true;
+            SetSelectableCards(true);
         }
     }
 
@@ -57,7 +81,7 @@ public class CardHandBehavior : MonoBehaviour
 
             CardBehavior cardBehavior = newCard.GetComponent<CardBehavior>();
             SelectableObjectBehavior selectableObjectBehavior = newCard.GetComponent<SelectableObjectBehavior>();
-            selectableObjectBehavior.ClickEnabled = CanChooseCard;
+            //selectableObjectBehavior.ClickEnabled = CanChooseCard;
             cardBehavior.SetCard(Cards[i]);
             cardBehavior.CardSelectedEvent.AddListener(OnCardClick);
 
@@ -68,8 +92,16 @@ public class CardHandBehavior : MonoBehaviour
     private void OnCardClick(GameObject sourceCardGameObject, Card card)
     {
         ClickCardEvent.Invoke(sourceCardGameObject, card);
-        sourceCardGameObject.GetComponent<SelectableObjectBehavior>().ClickEnabled = false;
-        CanChooseCard = false;
+        //old
+        //sourceCardGameObject.GetComponent<SelectableObjectBehavior>().ClickEnabled = false;
+        Destroy(sourceCardGameObject);
+        cardObjects.Remove(sourceCardGameObject);
+
+        //TODO; make this better
+        //Destroy(sourceCardGameObject.GetComponent<SelectableObjectBehavior>());
+       // sourceCardGameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f);
+
+        SetSelectableCards(false);
     }
 
 

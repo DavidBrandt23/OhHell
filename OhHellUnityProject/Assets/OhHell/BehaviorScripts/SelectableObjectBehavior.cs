@@ -7,36 +7,66 @@ public class SelectableObjectBehavior : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
     public UnityEvent clicked;
-    public bool ClickEnabled;
+    private bool _clickEnabled;
+    private bool mouseIsOver;
+    public bool ClickEnabled
+    {
+        get { return _clickEnabled; }
+        set
+        {
+            _clickEnabled = value;
+            SetColorCorrectly();
+        }
+    }
 
     public void Awake()
     {
         //ClickEnabled = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
-     //   clicked = new UnityEvent();
+        SetColorCorrectly();
+        //   clicked = new UnityEvent();
     }
 
     void OnMouseOver()
     {
-        if (ClickEnabled)
-        {
-            spriteRenderer.color = new Color(1.0f, 0.50f, 0.50f);
-        }
+        mouseIsOver = true;
+        SetColorCorrectly();
     }
 
     void OnMouseExit()
     {
-        spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f);
+        mouseIsOver = false;
+        SetColorCorrectly();
+    }
+    private void SetColorCorrectly()
+    {
+        spriteRenderer.color = GetColorToUser(ClickEnabled, mouseIsOver);
     }
     private void OnMouseDown()
     {
+    }
+
+    private static Color GetColorToUser(bool clickEnabled, bool hovered)
+    {
+        if (!clickEnabled)
+        {
+            return new Color(0.5f,0.5f,0.5f);
+        }
+
+        if (hovered)
+        {
+            return new Color(1.0f, 0.50f, 0.50f);
+        }
+        else
+        {
+            return new Color(1.0f, 1.0f, 1.0f);
+        }
     }
 
     private void OnMouseUp()
     {
         if (ClickEnabled)
         {
-            Debug.Log("sel on mouse up");
             clicked.Invoke();
         }
     }

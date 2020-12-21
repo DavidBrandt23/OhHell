@@ -44,24 +44,22 @@ public class NetworkManagerOhHell : NetworkManager
         }
         Invoke("StartGame2", 0.5f);
     }
+
     private void StartGame2()
+    {
+        gameManager.BeginGame();
+    }
+    private void StartGame2old()
     {
         Deck deck = new Deck();
         players[0].IsMyTurn = true;
         foreach (PlayerOhHell player in players)
         {
-            //            player.gameManagerNetId = gameManger.netId;
             player.InitializeUI(gameManager.netId);
             player.RoundStart(deck.DrawHand(6));
-
         }
-        Invoke("StartGame3", 0.5f);
     }
-
-    private void StartGame3()
-    {
-        //gameManager.StartUp();
-    }
+    
 
 
     public override void OnServerDisconnect(NetworkConnection conn)

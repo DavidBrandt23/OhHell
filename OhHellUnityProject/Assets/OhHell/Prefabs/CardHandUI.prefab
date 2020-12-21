@@ -43,5 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51d31c3366f16184594d6f1a0a187c64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardPrefab: {fileID: 1373366366999355874, guid: d2b65c2c1780ffd4db5960d851c916e4,
+  CardPrefab: {fileID: 7607530321323942798, guid: 1d27c4c0fcfd7a34aa66e19b260d3847,
     type: 3}
+  TestMode: 0
