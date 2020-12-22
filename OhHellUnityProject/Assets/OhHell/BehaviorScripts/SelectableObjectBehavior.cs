@@ -9,6 +9,7 @@ public class SelectableObjectBehavior : MonoBehaviour
     public UnityEvent clicked;
     private bool _clickEnabled;
     private bool mouseIsOver;
+    public bool enabledOnAwake;
     public bool ClickEnabled
     {
         get { return _clickEnabled; }
@@ -23,6 +24,7 @@ public class SelectableObjectBehavior : MonoBehaviour
     {
         //ClickEnabled = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
+        ClickEnabled = enabledOnAwake;
         SetColorCorrectly();
         //   clicked = new UnityEvent();
     }

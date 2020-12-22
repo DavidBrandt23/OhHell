@@ -11,14 +11,23 @@ public class GameManager : NetworkBehaviour
 
     public List<PlayerOhHell> players; //only works on server
     public SyncListUInt playerIds = new SyncListUInt();
+
+    [SyncVar]
+    public Card TrumpCard;
+
     private int currentTurnPlayerIndex = 0;
 
     private List<Card> cardsInCenter;
+
     [SyncVar]
     private int LeadingSuit;
 
-    private CardSuit? TrumpSuit;
+    [SyncVar]
+    public bool ShowOtherBids;
+
+
     private int CurrentRoundCardNum;
+    private bool RoundCardNumDecreasing;
     private int TricksPlayedThisRound;
 
 
@@ -28,7 +37,7 @@ public class GameManager : NetworkBehaviour
         //players = new SyncList<PlayerOhHell>();
         cardsInCenter = new List<Card>();
         SetLeadingSuit(null);
-        CurrentRoundCardNum = 6;
+        CurrentRoundCardNum = 0;
         TricksPlayedThisRound = 0;
     }
     void Start()
@@ -121,15 +130,76 @@ public class GameManager : NetworkBehaviour
         {
             Deck deck = new Deck();
             TricksPlayedThisRound = 0;
+            if (RoundCardNumDecreasing)
+            {
+                CurrentRoundCardNum--;
+            }
+            else
+            {
+                CurrentRoundCardNum++;
+                if (CurrentRoundCardNum > 6)
+                {
+                    CurrentRoundCardNum = 5;
+                    RoundCardNumDecreasing = true;
+                }
+            }
             foreach (PlayerOhHell player in players)
             {
                 player.RoundStart(deck.DrawHand(CurrentRoundCardNum));
-                player.IsMyTurn = false;
             }
-            currentTurnPlayerIndex = 0;
-            players[currentTurnPlayerIndex].IsMyTurn = true;
+            TrumpCard = deck.DrawCard();
         }
 
+        this.StartCoroutine(() =>
+        {
+            StartRound2();
+        }, 0.1f);
+
+    }
+    private void StartRound2()
+    {
+        if (isServer)
+        {
+            foreach (PlayerOhHell player in players)
+            {
+                player.IsMyTurn = false;
+                player.CurrentRoundBid = -1;
+                player.SendSelfUIUpdate();
+            }
+            ShowOtherBids = false;
+            currentTurnPlayerIndex = 0;
+        }
+
+    }
+    public void BidChosen(PlayerOhHell pl)
+    {
+        bool allPlayersBid = true;
+        foreach(PlayerOhHell player in players)
+        {
+            //player.SendSelfUIUpdate();
+            if(player.CurrentRoundBid == -1)
+            {
+                allPlayersBid = false;
+            }
+        }
+        if (allPlayersBid)
+        {
+            ShowOtherBids = true;
+            //get ShowOtherBids change
+            this.StartCoroutine(() =>
+            {
+                UpdateAllPlayerUIs();
+            }, 0.1f);
+            players[currentTurnPlayerIndex].IsMyTurn = true;
+        }
+    }
+    private void UpdateAllPlayerUIs()
+    {
+
+        foreach (PlayerOhHell player in players)
+        {
+            player.SendSelfUIUpdate();
+        }
     }
     public void CardChosen(PlayerOhHell pl, Card card)
     {
@@ -152,7 +222,7 @@ public class GameManager : NetworkBehaviour
             SetLeadingSuit(card.Suit);
         }
         
-        if (card.IsStronger(TrickWinningCard, GetLeadingSuit(), null))
+        if (card.IsStronger(TrickWinningCard, GetLeadingSuit(), GetTrumpSuit()))
         {
             TrickWinningCard = card;
             TrickWinningPlayer = pl;
@@ -173,7 +243,7 @@ public class GameManager : NetworkBehaviour
         {
             TricksPlayedThisRound++;
             currentTurnPlayerIndex = GetPlayerIndex(TrickWinningPlayer);
-            TrickWinningPlayer.Score++;
+            TrickWinningPlayer.TricksThisRound++;
             newTurnPlayerIndex = currentTurnPlayerIndex;
             TrickWinningPlayer = null;
             TrickWinningCard = null;
@@ -211,10 +281,27 @@ public class GameManager : NetworkBehaviour
         }
         if (roundEnd)
         {
-            StartRound();
+            foreach (PlayerOhHell player in players)
+            {
+                player.CurrentScore += player.TricksThisRound;
+                if (player.TricksThisRound == player.CurrentRoundBid)
+                {
+                    player.CurrentScore += 10;
+                }
+                player.TricksThisRound = 0;
+                player.CurrentRoundBid = -1;
+            }
+            this.StartCoroutine(() =>
+            {
+                StartRound();
+            }, 0.5f);
         }
     }
 
+    public CardSuit? GetTrumpSuit()
+    {
+        return TrumpCard?.Suit;
+    }
     public CardSuit? GetLeadingSuit()
     {
         if(LeadingSuit == -1)

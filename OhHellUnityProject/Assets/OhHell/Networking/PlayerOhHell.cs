@@ -16,8 +16,14 @@ public class PlayerOhHell : NetworkBehaviour
     [SyncVar]
     public uint gameManagerNetId;
     
-    [SyncVar(hook = nameof(SetScore))]
-    public int Score;
+    [SyncVar(hook = nameof(SetTricks))]
+    public int TricksThisRound;
+    
+    [SyncVar(hook = nameof(SetCurrentRoundBid))]
+    public int CurrentRoundBid;
+
+    [SyncVar(hook = nameof(SetCurrentScore))]
+    public int CurrentScore;
 
     [SyncVar(hook = nameof(SetIsMyTurn))]
     public bool IsMyTurn;
@@ -44,23 +50,59 @@ public class PlayerOhHell : NetworkBehaviour
 
     private void UpdateSelfPlayerUI()
     {
+        DataNeededForPlayerUI data = SelfGatherDataNeededForPlayerUI();
         if (isLocalPlayer)
         {
-            playerSelfViewBehavior?.UpdateTurnUI(IsMyTurn, GetGameManager()?.GetLeadingSuit());
-        }
-    }
-
-    void SetScore(int oldScore, int newScore)
-    {
-        Score = newScore;
-        if (isLocalPlayer)
-        {
-            playerSelfViewBehavior?.UpdateScoreUI(Score);
+            playerSelfViewBehavior?.RefreshUI(data);
         }
         else
         {
-            otherPlayerViewBehavior?.UpdateScoreUI(Score);
+            otherPlayerViewBehavior?.RefreshUI(data);
         }
+    }
+    private DataNeededForPlayerUI SelfGatherDataNeededForPlayerUI()
+    {
+        GameManager gameManager = GetGameManager();
+        int? bidToShow = CurrentRoundBid;
+        bool showOtherBids = false;
+        if (gameManager == null)
+        {
+            showOtherBids = false;
+        }
+        else
+        {
+            showOtherBids = gameManager.ShowOtherBids;
+        }
+
+        if(!isLocalPlayer && !showOtherBids)
+        {
+            bidToShow = null;
+        }
+        return new DataNeededForPlayerUI
+        {
+            leadingSuit = gameManager?.GetLeadingSuit(),
+            trumpCard = gameManager?.TrumpCard,
+            currentTricks = TricksThisRound,
+            isMyTurn = IsMyTurn,
+            currentBid = bidToShow,
+            currentScore = CurrentScore
+        };
+
+    }
+    void SetCurrentScore(int oldScore, int newScore)
+    {
+        CurrentScore = newScore;
+        UpdateSelfPlayerUI();
+    }
+    void SetTricks(int oldScore, int newScore)
+    {
+        TricksThisRound = newScore;
+        UpdateSelfPlayerUI();
+    }
+    void SetCurrentRoundBid(int oldScore, int newScore)
+    {
+        CurrentRoundBid = newScore;
+        UpdateSelfPlayerUI();
     }
     //On client
     [ClientRpc]
@@ -126,8 +168,9 @@ public class PlayerOhHell : NetworkBehaviour
             playerSelfViewBehavior = myPlayerUI.GetComponent<PlayerSelfViewBehavior>();
             playerSelfViewBehavior.Initialize();
             UpdateSelfPlayerUI();
-            playerSelfViewBehavior.UpdateScoreUI(Score);
             playerSelfViewBehavior.CardSelectedEvent.AddListener(OnCardChosen);
+            playerSelfViewBehavior.BidEvent.AddListener(OnBidChosen);
+
 
             // GameObject otherPlayerUI = Instantiate(playerViewOtherPrefab);
             // otherPlayerViewBehavior = otherPlayerUI.GetComponent<OtherPlayerViewBehavior>();
@@ -140,19 +183,32 @@ public class PlayerOhHell : NetworkBehaviour
             otherPlayerViewBehavior.UpdatePlayerName(PlayerName);
             ob.transform.position = GetGameManager().GetPlayerPosition(this);
             otherPlayerViewBehavior.CardTargetPoint.transform.position = GetGameManager().GetPlayerCardTargetPosition(this);
-            otherPlayerViewBehavior.UpdateScoreUI(Score);
+            UpdateSelfPlayerUI();
             // Text text = GameObject.Find("PVOtext").GetComponent<Text>();
             // text.text = "Other player is" + amount;
             //    (NetworkManager. as NetworkManagerOhHell).CommandOne();
         }
 
     }
+
+    [ClientRpc]
+    public void SendSelfUIUpdate()
+    {
+        UpdateSelfPlayerUI();
+    }
+
     private void OnCardChosen(GameObject sourceObj, Card card)
     {
         CmdCardChosen(card);
     }
+    private void OnBidChosen(int bid)
+    {
+       // Debug.Log("player bid = " + bid);
+        CmdBidChosen(bid);
+    }
 
-    
+
+
 
 
     //SERVER
@@ -162,13 +218,22 @@ public class PlayerOhHell : NetworkBehaviour
         PlayCard(card); //send to other clients
         GetGameManager().CardChosen(this, card);
     }
+    //SERVER
+    [Command]
+    public void CmdBidChosen(int bid)
+    {
+        CurrentRoundBid = bid;
+        //PlayCard(card); //send to other clients
+        GetGameManager().BidChosen(this);
+    }
     private GameManager GetGameManager()
     {
         if (NetworkIdentity.spawned.TryGetValue(gameManagerNetId, out NetworkIdentity identity))
         {
             return identity.gameObject.GetComponent<GameManager>();
         }
-        throw new Exception("failed to get gamemanager using ID + "+ gameManagerNetId);
+        Debug.Log("failed to get gamemanager using ID + " + gameManagerNetId);
+        return null;
     }
 
 }

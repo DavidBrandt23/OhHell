@@ -16,6 +16,11 @@ public class CardVisualBehavior : MonoBehaviour
     }
     public void SetCard(Card card)
     {
+        if (card == null)
+        {
+            spriteRenderer.sprite = null;
+            return;
+        }
         SetSprite(card.Suit, card.Power);
     }
 
