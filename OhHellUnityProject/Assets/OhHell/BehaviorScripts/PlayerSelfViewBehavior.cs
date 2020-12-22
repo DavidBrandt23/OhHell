@@ -70,12 +70,12 @@ public class PlayerSelfViewBehavior : MonoBehaviour
             ThrownCard = null;
         }
     }
-    public void OnNewRound(List<Card> newCards)
+    public void OnNewRound(List<Card> newCards, string trickLeaderName)
     {
         cardHandBehavior.SetCards(newCards);
         GameObject bidUIObj = Instantiate(bidUIPrefab);
         ActiveBidUI = bidUIObj.GetComponent<BidUIBehavior>();
-        ActiveBidUI.SetupBidUI(newCards.Count, "AA");
+        ActiveBidUI.SetupBidUI(newCards.Count, trickLeaderName);
 
         ActiveBidUI.BidEvent.AddListener(OnBidChosen);
     }

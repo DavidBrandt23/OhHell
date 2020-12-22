@@ -456,7 +456,7 @@ GameObject:
   - component: {fileID: 8166863187089470013}
   - component: {fileID: 8166863187089470010}
   m_Layer: 0
-  m_Name: PVtext
+  m_Name: YourTurn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -478,8 +478,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -53, y: -32.4}
-  m_SizeDelta: {x: 156.83221, y: 73.81401}
+  m_AnchoredPosition: {x: 1.800003, y: -16.49}
+  m_SizeDelta: {x: 443.5401, y: 43.787155}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8166863187089470013
 CanvasRenderer:
@@ -510,18 +510,18 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 33
+    m_FontSize: 25
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 3
+    m_MinSize: 2
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Your Turn
+  m_Text: It is your turn. Select a card.
 --- !u!1 &8524446221735242081
 GameObject:
   m_ObjectHideFlags: 0

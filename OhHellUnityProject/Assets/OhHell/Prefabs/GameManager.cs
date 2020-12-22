@@ -16,7 +16,10 @@ public class GameManager : NetworkBehaviour
     [SyncVar]
     public Card TrumpCard;
 
+    [SyncVar]
     private int currentTurnPlayerIndex = 0;
+
+    [SyncVar]
     private int roundFirstLeader = 0;
 
     private List<Card> cardsInCenter;
@@ -45,6 +48,16 @@ public class GameManager : NetworkBehaviour
     void Start()
     {
         
+    }
+
+    public List<string> GetPlayerNameList()
+    {
+        List<string> nameList = new List<string>();
+        foreach(PlayerOhHell pl in GetLocalPlayerList())
+        {
+            nameList.Add(pl.PlayerName);
+        }
+        return nameList;
     }
 
     // Update is called once per frame
@@ -156,6 +169,7 @@ public class GameManager : NetworkBehaviour
                 player.RoundStart(deck.DrawHand(CurrentRoundCardNum));
             }
             TrumpCard = deck.DrawCard();
+           // currentTurnPlayerIndex = roundFirstLeader;
         }
 
         this.StartCoroutine(() =>
@@ -175,7 +189,6 @@ public class GameManager : NetworkBehaviour
                 player.SendSelfUIUpdate();
             }
             ShowOtherBids = false;
-            currentTurnPlayerIndex = roundFirstLeader;
         }
 
     }
@@ -193,12 +206,13 @@ public class GameManager : NetworkBehaviour
         if (allPlayersBid)
         {
             ShowOtherBids = true;
+            currentTurnPlayerIndex = roundFirstLeader;
+            players[currentTurnPlayerIndex].IsMyTurn = true;
             //get ShowOtherBids change
             this.StartCoroutine(() =>
             {
                 UpdateAllPlayerUIs();
             }, 0.1f);
-            players[currentTurnPlayerIndex].IsMyTurn = true;
         }
     }
     private void UpdateAllPlayerUIs()
@@ -279,7 +293,6 @@ public class GameManager : NetworkBehaviour
     private void CardChosen2(int oldTurnPlayerIndex, int newTurnPlayerIndex, bool trickEnd, bool roundEnd)
     {
         players[oldTurnPlayerIndex].IsMyTurn = false;
-        players[newTurnPlayerIndex].IsMyTurn = true;
         if (trickEnd)
         {
             foreach (PlayerOhHell player in players)
@@ -298,19 +311,32 @@ public class GameManager : NetworkBehaviour
                 }
                 player.TricksThisRound = 0;
                 player.CurrentRoundBid = -1;
-                roundFirstLeader++;
-                if(roundFirstLeader >= NumPlayers())
-                {
-                    roundFirstLeader = 0;
-                }
+            }
+            roundFirstLeader++;
+            if (roundFirstLeader >= NumPlayers())
+            {
+                roundFirstLeader = 0;
             }
             this.StartCoroutine(() =>
             {
                 StartRound();
             }, 0.5f);
         }
+        else
+        {
+            players[newTurnPlayerIndex].IsMyTurn = true;
+        }
     }
-
+    public string GetTrickLeaderName()
+    {
+        List<PlayerOhHell> localList = GetLocalPlayerList();
+        PlayerOhHell player = localList[roundFirstLeader];
+        if (player.isLocalPlayer)
+        {
+            return "You";
+        }
+        return localList[roundFirstLeader].PlayerName;
+    }
     public CardSuit? GetTrumpSuit()
     {
         return TrumpCard?.Suit;

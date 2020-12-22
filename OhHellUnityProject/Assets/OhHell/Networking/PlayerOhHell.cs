@@ -120,7 +120,7 @@ public class PlayerOhHell : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            playerSelfViewBehavior.OnNewRound(hand);
+            playerSelfViewBehavior.OnNewRound(hand, GetGameManager().GetTrickLeaderName());
             //right now when dealing hand the new cards are always non-clickable by default so call update
             UpdateSelfPlayerUI();
         }
