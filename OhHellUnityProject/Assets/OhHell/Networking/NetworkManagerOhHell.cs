@@ -1,6 +1,7 @@
 ﻿using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [AddComponentMenu("")]
 public class NetworkManagerOhHell : NetworkManager
@@ -49,23 +50,22 @@ public class NetworkManagerOhHell : NetworkManager
     {
         gameManager.BeginGame();
     }
-    private void StartGame2old()
-    {
-        Deck deck = new Deck();
-        players[0].IsMyTurn = true;
-        foreach (PlayerOhHell player in players)
-        {
-            player.InitializeUI(gameManager.netId);
-            player.RoundStart(deck.DrawHand(6));
-        }
-    }
-    
 
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         // call base functionality (actually destroys the player)
         base.OnServerDisconnect(conn);
+    }
+    private void Update()
+    {
+
+        if (Input.GetKeyUp("space"))
+        {
+            SceneManager.LoadScene("MainScene");
+            // List<Card> newHand = GetRandomHand();
+            // SetCards(newHand);
+        }
     }
 }
 

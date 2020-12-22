@@ -1,17 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BidUIBehavior : MonoBehaviour
 {
     public GameObject BidButtonPrefab;
     public BidSelectedEvent BidEvent;
+    public Text LeaderText;
     public void Awake()
     {
         // SetupBidUI(3);
         //BidEvent = new BidSelectedEvent();
     }
-    public void SetupBidUI(int maxBid)
+    public void SetupBidUI(int maxBid, string leaderName)
     {
         BidEvent = new BidSelectedEvent();
         int numButtons = maxBid + 1;
@@ -26,6 +28,7 @@ public class BidUIBehavior : MonoBehaviour
             bidButtonBehavior.BidSelectedEvent.AddListener(OnButtonClick);
             newButtonObj.transform.localPosition = new Vector3(firstCardOffset + i * cardSpacing, 0.0f, 0.0f);
         }
+        LeaderText.text = leaderName + " will lead the first trick";
     }
     public void OnButtonClick(int bid)
     {

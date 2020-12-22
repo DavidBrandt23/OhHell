@@ -11,11 +11,13 @@ public class GameManager : NetworkBehaviour
 
     public List<PlayerOhHell> players; //only works on server
     public SyncListUInt playerIds = new SyncListUInt();
+    public SpawnPointBehavior spawnPointBehavior;
 
     [SyncVar]
     public Card TrumpCard;
 
     private int currentTurnPlayerIndex = 0;
+    private int roundFirstLeader = 0;
 
     private List<Card> cardsInCenter;
 
@@ -74,14 +76,20 @@ public class GameManager : NetworkBehaviour
         }
         return -1;
     }
+    private int NumPlayers()
+    {
+        return playerIds.Count;
+    }
 
     public Vector3 GetPlayerPosition(PlayerOhHell player)
     {
-        return PlayerSpawnPoints[GetPlayerPositionIndex(player)].transform.position;
+        return spawnPointBehavior.GetSpawnPoint(NumPlayers(), GetPlayerPositionIndex(player));
+        //return PlayerSpawnPoints[GetPlayerPositionIndex(player)].transform.position;
     }
     public Vector3 GetPlayerCardTargetPosition(PlayerOhHell player)
     {
-        return CardSpawnPoints[GetPlayerPositionIndex(player)].transform.position;
+        return spawnPointBehavior.GetCardTarget(NumPlayers(), GetPlayerPositionIndex(player));
+        //return CardSpawnPoints[GetPlayerPositionIndex(player)].transform.position;
     }
     private int GetPlayerPositionIndex(PlayerOhHell player)
     {
@@ -167,7 +175,7 @@ public class GameManager : NetworkBehaviour
                 player.SendSelfUIUpdate();
             }
             ShowOtherBids = false;
-            currentTurnPlayerIndex = 0;
+            currentTurnPlayerIndex = roundFirstLeader;
         }
 
     }
@@ -290,6 +298,11 @@ public class GameManager : NetworkBehaviour
                 }
                 player.TricksThisRound = 0;
                 player.CurrentRoundBid = -1;
+                roundFirstLeader++;
+                if(roundFirstLeader >= NumPlayers())
+                {
+                    roundFirstLeader = 0;
+                }
             }
             this.StartCoroutine(() =>
             {

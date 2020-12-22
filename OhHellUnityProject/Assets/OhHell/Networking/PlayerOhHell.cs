@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerOhHell : NetworkBehaviour
@@ -30,7 +31,16 @@ public class PlayerOhHell : NetworkBehaviour
 
     private OtherPlayerViewBehavior otherPlayerViewBehavior;
     private PlayerSelfViewBehavior playerSelfViewBehavior;
+    private void Update()
+    {
 
+        if (Input.GetKeyUp("space"))
+        {
+          //  SceneManager.LoadScene("MenuScene");
+            // List<Card> newHand = GetRandomHand();
+            // SetCards(newHand);
+        }
+    }
     void FixedUpdate()
     {
     }

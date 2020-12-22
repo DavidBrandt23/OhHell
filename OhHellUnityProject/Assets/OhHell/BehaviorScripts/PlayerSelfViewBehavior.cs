@@ -75,7 +75,7 @@ public class PlayerSelfViewBehavior : MonoBehaviour
         cardHandBehavior.SetCards(newCards);
         GameObject bidUIObj = Instantiate(bidUIPrefab);
         ActiveBidUI = bidUIObj.GetComponent<BidUIBehavior>();
-        ActiveBidUI.SetupBidUI(newCards.Count);
+        ActiveBidUI.SetupBidUI(newCards.Count, "AA");
 
         ActiveBidUI.BidEvent.AddListener(OnBidChosen);
     }
