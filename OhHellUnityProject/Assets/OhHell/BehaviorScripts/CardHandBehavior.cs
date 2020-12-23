@@ -62,7 +62,7 @@ public class CardHandBehavior : MonoBehaviour
         }
     }
 
-    public void SetCards(List<Card> newCards)
+    public void SetCards(List<Card> newCards, bool faceDown = false)
     {
         Cards = newCards;
 
@@ -82,7 +82,7 @@ public class CardHandBehavior : MonoBehaviour
             CardBehavior cardBehavior = newCard.GetComponent<CardBehavior>();
             SelectableObjectBehavior selectableObjectBehavior = newCard.GetComponent<SelectableObjectBehavior>();
             //selectableObjectBehavior.ClickEnabled = CanChooseCard;
-            cardBehavior.SetCard(Cards[i]);
+            cardBehavior.SetCard(Cards[i], faceDown);
             cardBehavior.CardSelectedEvent.AddListener(OnCardClick);
 
             newCard.transform.localPosition = new Vector3(firstCardOffset + i * cardSpacing, 0.0f, 0.0f);

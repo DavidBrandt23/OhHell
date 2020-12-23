@@ -73,12 +73,12 @@ public class PlayerSelfViewBehavior : MonoBehaviour
             ThrownCard = null;
         }
     }
-    public void OnNewRound(List<Card> newCards, string trickLeaderName)
+    public void OnNewRound(List<Card> newCards, string trickLeaderName, bool isIndianRound)
     {
-        cardHandBehavior.SetCards(newCards);
+        cardHandBehavior.SetCards(newCards, isIndianRound);
         GameObject bidUIObj = Instantiate(bidUIPrefab);
         ActiveBidUI = bidUIObj.GetComponent<BidUIBehavior>();
-        ActiveBidUI.SetupBidUI(newCards.Count, trickLeaderName);
+        ActiveBidUI.SetupBidUI(newCards.Count, trickLeaderName, isIndianRound);
 
         ActiveBidUI.BidEvent.AddListener(OnBidChosen);
         myAudioSource.PlayOneShot(DealSound);

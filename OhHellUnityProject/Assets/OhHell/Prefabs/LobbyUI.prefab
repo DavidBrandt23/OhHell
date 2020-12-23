@@ -336,6 +336,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: start button
       objectReference: {fileID: 0}
+    - target: {fileID: 2995907850330386688, guid: 7e95c0bbc2be464408141caf2bd99716,
+        type: 3}
+      propertyPath: m_text
+      value: Start game with these players
+      objectReference: {fileID: 0}
+    - target: {fileID: 2995907850330386688, guid: 7e95c0bbc2be464408141caf2bd99716,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2995907850330386688, guid: 7e95c0bbc2be464408141caf2bd99716,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 7365387129717600535, guid: 7e95c0bbc2be464408141caf2bd99716,
         type: 3}
       propertyPath: m_Text

@@ -73,15 +73,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 403f60fdb38d81f47b97f384065d5c86, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 10.5, y: 14.833333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1373366366999355877
@@ -149,6 +149,7 @@ MonoBehaviour:
   - {fileID: -8540658884322528435, guid: c5d445897d06f4245b059f24811b851d, type: 3}
   - {fileID: -1082442367596095171, guid: c5d445897d06f4245b059f24811b851d, type: 3}
   - {fileID: -5966067482994505776, guid: c5d445897d06f4245b059f24811b851d, type: 3}
+  faceDownCardSprite: {fileID: 21300000, guid: 403f60fdb38d81f47b97f384065d5c86, type: 3}
 --- !u!61 &1567516406
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -165,10 +166,10 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 10.5, y: 14.833333}
+    newSize: {x: 10.5, y: 14.833333}
+    adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0

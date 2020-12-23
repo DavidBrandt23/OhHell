@@ -13,6 +13,7 @@ public class LobbyUIBehavior : NetworkBehaviour
     public GameObject startButtonObject;
     public GameObject waitingForHostMessageObject;
     public UnityEvent StartEvent;
+    private int numPlayers;
     // Start is called before the first frame update
     void Start()
     {
@@ -45,11 +46,13 @@ public class LobbyUIBehavior : NetworkBehaviour
 
         startButtonObject.SetActive(isServer);
         waitingForHostMessageObject.SetActive(!isServer);
+
+        numPlayers = names.Count;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        startButtonSelectableBeh.ClickEnabled = numPlayers > 1;
     }
 }

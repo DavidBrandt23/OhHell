@@ -22,10 +22,10 @@ public class CardBehavior : MonoBehaviour
         Debug.Log("on card sel");
         CardSelectedEvent.Invoke(gameObject, myCard);
     }
-    public void SetCard(Card card)
+    public void SetCard(Card card, bool faceDown = false)
     {
         myCard = card;
-        GetComponent<CardVisualBehavior>().SetCard(myCard);
+        GetComponent<CardVisualBehavior>().SetCard(myCard, faceDown);
     }
     // Use this for initialization
     void Start()

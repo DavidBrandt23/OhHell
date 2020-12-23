@@ -30,6 +30,9 @@ public class GameManager : NetworkBehaviour
     [SyncVar]
     public bool ShowOtherBids;
 
+    [SyncVar]
+    public bool IsIndianRound;
+
 
     private int CurrentRoundCardNum;
     private bool RoundCardNumDecreasing;
@@ -166,7 +169,8 @@ public class GameManager : NetworkBehaviour
             }
             foreach (PlayerOhHell player in players)
             {
-                player.RoundStart(deck.DrawHand(CurrentRoundCardNum));
+                //IsIndianRound
+                player.RoundStart(deck.DrawHand(CurrentRoundCardNum), CurrentRoundCardNum == 1);
             }
             TrumpCard = deck.DrawCard();
            // currentTurnPlayerIndex = roundFirstLeader;

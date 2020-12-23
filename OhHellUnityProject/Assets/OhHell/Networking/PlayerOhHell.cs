@@ -117,13 +117,17 @@ public class PlayerOhHell : NetworkBehaviour
     }
     //On client
     [ClientRpc]
-    public void RoundStart(List<Card> hand)
+    public void RoundStart(List<Card> hand, bool isIndianRound)
     {
         if (isLocalPlayer)
         {
-            playerSelfViewBehavior.OnNewRound(hand, GetGameManager().GetTrickLeaderName());
+            playerSelfViewBehavior?.OnNewRound(hand, GetGameManager().GetTrickLeaderName(), isIndianRound);
             //right now when dealing hand the new cards are always non-clickable by default so call update
             UpdateSelfPlayerUI();
+        }
+        else
+        {
+            otherPlayerViewBehavior?.OnNewRound(hand, isIndianRound);
         }
     }
 

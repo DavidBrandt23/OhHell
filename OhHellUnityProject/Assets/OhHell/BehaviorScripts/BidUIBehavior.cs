@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,13 +8,14 @@ public class BidUIBehavior : MonoBehaviour
 {
     public GameObject BidButtonPrefab;
     public BidSelectedEvent BidEvent;
-    public Text LeaderText;
+    public TextMeshPro LeaderText;
+    public TextMeshPro IndianText;
     public void Awake()
     {
         // SetupBidUI(3);
         //BidEvent = new BidSelectedEvent();
     }
-    public void SetupBidUI(int maxBid, string leaderName)
+    public void SetupBidUI(int maxBid, string leaderName, bool isIndianRound)
     {
         BidEvent = new BidSelectedEvent();
         int numButtons = maxBid + 1;
@@ -26,8 +28,9 @@ public class BidUIBehavior : MonoBehaviour
             bidButtonBehavior.SetBidValue(i);
             bidButtonBehavior.BidSelectedEvent = new BidSelectedEvent();
             bidButtonBehavior.BidSelectedEvent.AddListener(OnButtonClick);
-            newButtonObj.transform.localPosition = new Vector3(firstCardOffset + i * cardSpacing, 0.0f, 0.0f);
+            newButtonObj.transform.localPosition = new Vector3(firstCardOffset + i * cardSpacing, -3.5f, 0.0f);
         }
+        IndianText.enabled = isIndianRound;
         LeaderText.text = leaderName + " will lead the first trick";
     }
     public void OnButtonClick(int bid)

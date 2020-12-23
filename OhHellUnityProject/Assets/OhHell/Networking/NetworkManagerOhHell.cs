@@ -31,7 +31,7 @@ public class NetworkManagerOhHell : NetworkManager
             GameObject gameManagerOb = Instantiate(spawnPrefabs.Find(prefab => prefab.name == "GameManager"));
             NetworkServer.Spawn(gameManagerOb);
             gameManager = gameManagerOb.GetComponent<GameManager>();
-            //gameManager.StartMake();
+
             lobbyUI = Instantiate(spawnPrefabs.Find(prefab => prefab.name == "LobbyUI"));
             lobbyUI.GetComponent<LobbyUIBehavior>().StartEvent = new UnityEvent();
             lobbyUI.GetComponent<LobbyUIBehavior>().StartEvent.AddListener(StartGame);
@@ -40,12 +40,10 @@ public class NetworkManagerOhHell : NetworkManager
         GameObject player = Instantiate(playerPrefab);
         NetworkServer.AddPlayerForConnection(conn, player);
         PlayerOhHell newPlayerScript = player.GetComponent<PlayerOhHell>();
-        //players.Add(newPlayerScript);
-        //GameObject.Find
+
         gameManager.players.Add(newPlayerScript);
         gameManager.playerIds.Add(newPlayerScript.netId);
-        //SetNames(newPlayerScript);
-        newPlayerScript.PlayerName =  "Player " + (newPlayerScript.netId - 2);
+
         newPlayerScript.GetInputPlayerName();
 
 
