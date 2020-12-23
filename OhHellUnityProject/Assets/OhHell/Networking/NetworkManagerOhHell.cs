@@ -1,5 +1,6 @@
 ﻿using Mirror;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -10,7 +11,10 @@ public class NetworkManagerOhHell : NetworkManager
     //private List<PlayerOhHell> players;
     private GameManager gameManager;
     private GameObject lobbyUI;
-
+    public TMP_InputField IPField;
+    public TMP_InputField PlayerNameField;
+    public GameObject MainMenuObject;
+    public string localPlayerName;
     public override void Start()
     {
         base.Start();
@@ -19,12 +23,7 @@ public class NetworkManagerOhHell : NetworkManager
         //NetworkServer.Spawn(gameManagerOb);
         //gameManager = gameManagerOb.GetComponent<GameManager>();
     }
-
-    //[Command]
-    //public void CommandOne()
-    //{
-    //    Debug.Log("command called");
-    //}
+    
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         if(numPlayers == 0)
@@ -45,24 +44,31 @@ public class NetworkManagerOhHell : NetworkManager
         //GameObject.Find
         gameManager.players.Add(newPlayerScript);
         gameManager.playerIds.Add(newPlayerScript.netId);
-        newPlayerScript.PlayerName = "Player " + (newPlayerScript.netId - 2);
-        Invoke("UpdateLobbyNames", 0.1f);
+        //SetNames(newPlayerScript);
+        newPlayerScript.PlayerName =  "Player " + (newPlayerScript.netId - 2);
+        newPlayerScript.GetInputPlayerName();
 
-        if (numPlayers == 3)
-        {
-            //StartGame();
-        }
+
+        Invoke("UpdateLobbyNames", 0.1f);
+        
     }
 
+    public void TryStartHost()
+    {
+        StartHost();
+        localPlayerName = PlayerNameField.text;
+        MainMenuObject.SetActive(false);
+    }
+    public void TryJoin()
+    {
+        networkAddress = IPField.text;
+        localPlayerName = PlayerNameField.text;
+        StartClient();
+        MainMenuObject.SetActive(false);
+    }
 
     private void StartGame()
     {
-        //foreach (PlayerOhHell player in players)
-        //{
-        // gameManager.players.Add(player);
-        // gameManager.playerIds.Add(player.netId);
-        //  player.PlayerName = "Player " + player.netId;
-        //}
         Destroy(lobbyUI.gameObject);
         Invoke("StartGame2", 0.5f);
     }
@@ -71,10 +77,9 @@ public class NetworkManagerOhHell : NetworkManager
         gameManager.BeginGame();
     }
 
-    private void UpdateLobbyNames()
+    public void UpdateLobbyNames()
     {
         lobbyUI.GetComponent<LobbyUIBehavior>().SetNames(gameManager.GetPlayerNameList());
-        //gameManager.BeginGame();
     }
 
 
@@ -88,9 +93,6 @@ public class NetworkManagerOhHell : NetworkManager
 
         if (Input.GetKeyUp("space"))
         {
-            //SceneManager.LoadScene("MainScene");
-            // List<Card> newHand = GetRandomHand();
-            // SetCards(newHand);
         }
     }
 }

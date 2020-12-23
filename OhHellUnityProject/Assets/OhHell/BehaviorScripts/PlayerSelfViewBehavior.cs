@@ -27,6 +27,9 @@ public class PlayerSelfViewBehavior : MonoBehaviour
     public BidSelectedEvent BidEvent;
     public CardEvent CardSelectedEvent;
     private GameObject ThrownCard;
+    public AudioSource myAudioSource;
+
+    public AudioClip DealSound;
 
     private BidUIBehavior ActiveBidUI;
     public void Awake()
@@ -78,6 +81,7 @@ public class PlayerSelfViewBehavior : MonoBehaviour
         ActiveBidUI.SetupBidUI(newCards.Count, trickLeaderName);
 
         ActiveBidUI.BidEvent.AddListener(OnBidChosen);
+        myAudioSource.PlayOneShot(DealSound);
     }
     private void OnBidChosen(int bidValue)
     {

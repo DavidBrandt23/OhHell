@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -216,10 +217,22 @@ public class PlayerOhHell : NetworkBehaviour
        // Debug.Log("player bid = " + bid);
         CmdBidChosen(bid);
     }
-
-
-
-
+    [ClientRpc]
+    public void GetInputPlayerName()
+    {
+        if (isLocalPlayer)
+        {
+            GameObject input = GameObject.Find("NetworkManager");
+            string name = input.GetComponent<NetworkManagerOhHell>().localPlayerName;
+            CmdUpdatePlayerInputName(name);
+        }
+    }
+    [Command]
+    public void CmdUpdatePlayerInputName(string name)
+    {
+        PlayerName = name;
+        GameObject.Find("NetworkManager").GetComponent<NetworkManagerOhHell>().UpdateLobbyNames();
+    }
 
     //SERVER
     [Command]
