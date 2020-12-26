@@ -170,7 +170,9 @@ public class GameManager : NetworkBehaviour
             foreach (PlayerOhHell player in players)
             {
                 //IsIndianRound
-                player.RoundStart(deck.DrawHand(CurrentRoundCardNum), CurrentRoundCardNum == 1);
+                bool isIndian = false;
+                CurrentRoundCardNum = 6;
+                player.RoundStart(deck.DrawHand(CurrentRoundCardNum), isIndian);
             }
             TrumpCard = deck.DrawCard();
            // currentTurnPlayerIndex = roundFirstLeader;

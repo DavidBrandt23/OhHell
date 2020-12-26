@@ -17,7 +17,7 @@ public class MainMenuBehavior : MonoBehaviour
     {
         if (DebugMode)
         {
-            nameField.text = "David " + Random.Range(1, 1000);
+            nameField.text = "David" + Random.Range(1, 1000);
             ipField.text = "localhost";
         }
         if (Application.platform == RuntimePlatform.WebGLPlayer)

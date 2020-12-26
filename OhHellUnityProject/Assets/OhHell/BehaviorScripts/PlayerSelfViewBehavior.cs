@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 public class DataNeededForPlayerUI
 {
+    public string playerName;
     public int? currentBid;
     public int? currentTricks;
     public CardSuit? leadingSuit;
@@ -16,18 +18,17 @@ public class DataNeededForPlayerUI
 public class PlayerSelfViewBehavior : MonoBehaviour
 {
     public CardHandBehavior cardHandBehavior;
-    public Text TurnText;
-    public Text TricksText;
-    public Text ScoreText;
-    public Text BidText;
-    //  public Text TrumpLabelText;
+    public TextMeshPro TurnText;
+
     public GameObject CardTarget;
     public CardBehavior TrumpCardScript;
     public GameObject bidUIPrefab;
     public BidSelectedEvent BidEvent;
     public CardEvent CardSelectedEvent;
+
     private GameObject ThrownCard;
     public AudioSource myAudioSource;
+    public PlayerInfoBoxBehavior playerInfoBox;
 
     public AudioClip DealSound;
 
@@ -37,17 +38,13 @@ public class PlayerSelfViewBehavior : MonoBehaviour
         CardSelectedEvent = new CardEvent();
 
         BidEvent = new BidSelectedEvent();
-       // cardHandBehavior.CanChooseCard = true;//tests
-        //cardHandBehavior.ClickCardEvent.AddListener(onCardSelected);//for test
     }
     public void RefreshUI(DataNeededForPlayerUI data)
     {
         cardHandBehavior.SetSelectableCards(data.isMyTurn, data.leadingSuit);
         TurnText.enabled = data.isMyTurn;
         TrumpCardScript.SetCard(data.trumpCard);
-        TricksText.text = OtherPlayerViewBehavior.TricksDisplayString(data.currentTricks);
-        BidText.text = OtherPlayerViewBehavior.BidDisplayString(data.currentBid);
-        ScoreText.text = OtherPlayerViewBehavior.ScoreDisplayString(data.currentScore);
+        playerInfoBox.UpdateUI(data);
     }
     public void Initialize()
     {

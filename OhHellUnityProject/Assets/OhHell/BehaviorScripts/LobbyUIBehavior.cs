@@ -1,6 +1,7 @@
 ﻿using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -40,7 +41,7 @@ public class LobbyUIBehavior : NetworkBehaviour
             {
                 playerName = names[i];
             }
-            newPlayerOb.GetComponent<Text>().text = (i+1) + ": " + playerName;
+            newPlayerOb.GetComponent<TextMeshPro>().text = (i+1) + ": " + playerName;
             newPlayerOb.transform.localPosition = new Vector3(0.0f, i * -5.0f, 0.0f);
         }
 

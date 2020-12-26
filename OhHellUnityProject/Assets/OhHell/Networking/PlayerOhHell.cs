@@ -42,20 +42,34 @@ public class PlayerOhHell : NetworkBehaviour
             // SetCards(newHand);
         }
     }
+
     void FixedUpdate()
     {
     }
-    void SetPlayerName(string oldColor, string newColor)
+
+    void SetPlayerName(string oldVal, string newVal)
     {
-        PlayerName = newColor;
-        if (!isLocalPlayer)
-        {
-            otherPlayerViewBehavior?.UpdatePlayerName(PlayerName);
-        }
+        PlayerName = newVal;
+        UpdateSelfPlayerUI();
     }
-    void SetIsMyTurn(bool oldColor, bool newColor)
+    void SetIsMyTurn(bool oldVal, bool newVal)
     {
-        IsMyTurn = newColor;
+        IsMyTurn = newVal;
+        UpdateSelfPlayerUI();
+    }
+    void SetCurrentScore(int oldVal, int newVal)
+    {
+        CurrentScore = newVal;
+        UpdateSelfPlayerUI();
+    }
+    void SetTricks(int oldVal, int newVal)
+    {
+        TricksThisRound = newVal;
+        UpdateSelfPlayerUI();
+    }
+    void SetCurrentRoundBid(int oldVal, int newVal)
+    {
+        CurrentRoundBid = newVal;
         UpdateSelfPlayerUI();
     }
 
@@ -96,24 +110,10 @@ public class PlayerOhHell : NetworkBehaviour
             currentTricks = TricksThisRound,
             isMyTurn = IsMyTurn,
             currentBid = bidToShow,
-            currentScore = CurrentScore
+            currentScore = CurrentScore,
+            playerName = PlayerName,
         };
 
-    }
-    void SetCurrentScore(int oldScore, int newScore)
-    {
-        CurrentScore = newScore;
-        UpdateSelfPlayerUI();
-    }
-    void SetTricks(int oldScore, int newScore)
-    {
-        TricksThisRound = newScore;
-        UpdateSelfPlayerUI();
-    }
-    void SetCurrentRoundBid(int oldScore, int newScore)
-    {
-        CurrentRoundBid = newScore;
-        UpdateSelfPlayerUI();
     }
     //On client
     [ClientRpc]
@@ -174,9 +174,9 @@ public class PlayerOhHell : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void InitializeUI(uint amount)
+    public void InitializeUI(uint newGameManagerNetId)
     {
-        gameManagerNetId =  amount;
+        gameManagerNetId = newGameManagerNetId;
         if (isLocalPlayer)
         {
             GameObject myPlayerUI = Instantiate(playerViewSelfPrefab); ;
@@ -185,23 +185,14 @@ public class PlayerOhHell : NetworkBehaviour
             UpdateSelfPlayerUI();
             playerSelfViewBehavior.CardSelectedEvent.AddListener(OnCardChosen);
             playerSelfViewBehavior.BidEvent.AddListener(OnBidChosen);
-
-
-            // GameObject otherPlayerUI = Instantiate(playerViewOtherPrefab);
-            // otherPlayerViewBehavior = otherPlayerUI.GetComponent<OtherPlayerViewBehavior>();
-
         }
         else
         {
             GameObject ob = Instantiate(playerViewOtherPrefab);
             otherPlayerViewBehavior = ob.GetComponent<OtherPlayerViewBehavior>();
-            otherPlayerViewBehavior.UpdatePlayerName(PlayerName);
             ob.transform.position = GetGameManager().GetPlayerPosition(this);
             otherPlayerViewBehavior.CardTargetPoint.transform.position = GetGameManager().GetPlayerCardTargetPosition(this);
             UpdateSelfPlayerUI();
-            // Text text = GameObject.Find("PVOtext").GetComponent<Text>();
-            // text.text = "Other player is" + amount;
-            //    (NetworkManager. as NetworkManagerOhHell).CommandOne();
         }
 
     }
@@ -218,7 +209,6 @@ public class PlayerOhHell : NetworkBehaviour
     }
     private void OnBidChosen(int bid)
     {
-       // Debug.Log("player bid = " + bid);
         CmdBidChosen(bid);
     }
     [ClientRpc]
