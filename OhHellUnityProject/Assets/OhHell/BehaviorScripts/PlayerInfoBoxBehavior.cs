@@ -9,18 +9,20 @@ public class PlayerInfoBoxBehavior : MonoBehaviour
     public TextMeshPro BidText;
     public TextMeshPro NameText;
     public GameObject MyTurnBG;
+    public GameObject TrickWinBG;
 
     public void UpdateUI(DataNeededForPlayerUI data)
     {
-        UpdateUI(data.playerName, data.currentTricks, data.currentScore, data.currentBid, data.isMyTurn);
+        UpdateUI(data.playerName, data.currentTricks, data.currentScore, data.currentBid, data.isMyTurn, data.isTrickWinner);
     }
-    public void UpdateUI(string name, int? tricks, int? score, int? bid, bool isMyTurn)
+    public void UpdateUI(string name, int? tricks, int? score, int? bid, bool isMyTurn, bool isTrickWinner)
     {
         NameText.text = name;
         BidText.text = BidDisplayString(bid);
         TricksText.text = TricksDisplayString(tricks);
         ScoreText.text = ScoreDisplayString(score);
         MyTurnBG.SetActive(isMyTurn);
+        TrickWinBG.SetActive(isTrickWinner);
     }
     
     public static string BidDisplayString(int? bid)

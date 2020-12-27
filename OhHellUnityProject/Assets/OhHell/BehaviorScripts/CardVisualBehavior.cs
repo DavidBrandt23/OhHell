@@ -8,11 +8,17 @@ public class CardVisualBehavior : MonoBehaviour
 {
     public List<Sprite> cardSprites;
     public Sprite faceDownCardSprite;
+    public GameObject Highlight;
     private SpriteRenderer spriteRenderer;
 
     public void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+    }
+    public void EnableHighlight(bool on)
+    {
+        Highlight.SetActive(on);
 
     }
     public void SetCard(Card card, bool faceDown = false)

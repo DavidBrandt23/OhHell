@@ -9,7 +9,7 @@ public class GameManager : NetworkBehaviour
     public List<PlayerOhHell> players; //only works on server
     public SyncListUInt playerIds = new SyncListUInt();
     public SpawnPointBehavior spawnPointBehavior;
-    private int MaxHand = 6; //6 for final
+    private int MaxHand = 2; //6 for final
 
     [SyncVar]
     public Card TrumpCard;
@@ -30,6 +30,9 @@ public class GameManager : NetworkBehaviour
 
     [SyncVar]
     public bool IsIndianRound;
+
+    [SyncVar]
+    private uint trickWinningPlayerId;
 
 
     private int CurrentRoundCardNum;
@@ -98,12 +101,10 @@ public class GameManager : NetworkBehaviour
     public Vector3 GetPlayerPosition(PlayerOhHell player)
     {
         return spawnPointBehavior.GetSpawnPoint(NumPlayers(), GetPlayerPositionIndex(player));
-        //return PlayerSpawnPoints[GetPlayerPositionIndex(player)].transform.position;
     }
     public Vector3 GetPlayerCardTargetPosition(PlayerOhHell player)
     {
         return spawnPointBehavior.GetCardTarget(NumPlayers(), GetPlayerPositionIndex(player));
-        //return CardSpawnPoints[GetPlayerPositionIndex(player)].transform.position;
     }
     private int GetPlayerPositionIndex(PlayerOhHell player)
     {
@@ -135,7 +136,7 @@ public class GameManager : NetworkBehaviour
         throw new System.Exception("failedto get ID: " + targetID);
     }
 
-    private PlayerOhHell TrickWinningPlayer;
+    private PlayerOhHell TrickWinningPlayer; //keep winner id in sync
     private Card TrickWinningCard;
     public void BeginGame()
     {
@@ -211,7 +212,6 @@ public class GameManager : NetworkBehaviour
         bool allPlayersBid = true;
         foreach(PlayerOhHell player in players)
         {
-            //player.SendSelfUIUpdate();
             if(player.CurrentRoundBid == -1)
             {
                 allPlayersBid = false;
@@ -229,14 +229,15 @@ public class GameManager : NetworkBehaviour
             }, 0.1f);
         }
     }
+
     private void UpdateAllPlayerUIs()
     {
-
         foreach (PlayerOhHell player in players)
         {
             player.SendSelfUIUpdate();
         }
     }
+
     public void CardChosen(PlayerOhHell pl, Card card)
     {
         if (!isServer)
@@ -281,6 +282,7 @@ public class GameManager : NetworkBehaviour
             currentTurnPlayerIndex = GetPlayerIndex(TrickWinningPlayer);
             TrickWinningPlayer.TricksThisRound++;
             newTurnPlayerIndex = currentTurnPlayerIndex;
+            trickWinningPlayerId = TrickWinningPlayer.netId;
             TrickWinningPlayer = null;
             TrickWinningCard = null;
             SetLeadingSuit(null);
@@ -295,9 +297,14 @@ public class GameManager : NetworkBehaviour
         float delay = 0.1f;
         if (trickEnd)
         {
-            delay = 0.5f;
+            players[oldTurnPlayerIndex].IsMyTurn = false;
+            delay = 4.0f; //time for 'X won the trick to show' before clearing middle cards
         }
-        //don't update ismyturn until leading suit set
+        this.StartCoroutine(() =>
+        {
+            UpdateAllPlayerUIs();
+        }, 0.01f);
+
         this.StartCoroutine(() =>
         {
             CardChosen2(oldTurnPlayerIndex, newTurnPlayerIndex, trickEnd, roundEnd);
@@ -309,10 +316,16 @@ public class GameManager : NetworkBehaviour
         players[oldTurnPlayerIndex].IsMyTurn = false;
         if (trickEnd)
         {
+            trickWinningPlayerId = 999999;
             foreach (PlayerOhHell player in players)
             {
                 player.TrickEnd();
             }
+
+            this.StartCoroutine(() =>
+            {
+                UpdateAllPlayerUIs();
+            }, 0.1f);
         }
         if (roundEnd)
         {
@@ -376,6 +389,33 @@ public class GameManager : NetworkBehaviour
             return "You";
         }
         return localList[roundFirstLeader].PlayerName;
+    }
+    public bool PlayerIsTrickWinner(PlayerOhHell pl)
+    {
+        return pl.netId == trickWinningPlayerId;
+    }
+    public string GetTrickWinnerName()
+    {
+        List<PlayerOhHell> localList = GetLocalPlayerList();
+        PlayerOhHell winner = null;
+        
+        foreach(PlayerOhHell p in localList)
+        {
+            if(p.netId == trickWinningPlayerId)
+            {
+                winner = p;
+            }
+        }
+        if(winner == null)
+        {
+            return null;
+        }
+        
+        if (winner.isLocalPlayer)
+        {
+            return "You";
+        }
+        return winner.PlayerName;
     }
     public List<ScorePair> GetScores()
     {

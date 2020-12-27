@@ -13,12 +13,15 @@ public class DataNeededForPlayerUI
     public bool isMyTurn;
     public Card trumpCard;
     public int? currentScore;
+    public bool isTrickWinner;
+    public string trickWinnerNameToShow;
 }
 
 public class PlayerSelfViewBehavior : MonoBehaviour
 {
     public CardHandBehavior cardHandBehavior;
     public TextMeshPro TurnText;
+    public TextMeshPro TrickWinnerText;
     public CardThrowBehavior cardThrowBehavior;
 
     public GameObject CardTarget;
@@ -48,6 +51,21 @@ public class PlayerSelfViewBehavior : MonoBehaviour
         TurnText.enabled = data.isMyTurn;
         TrumpCardScript.SetCard(data.trumpCard);
         playerInfoBox.UpdateUI(data);
+
+        string trickWinnerName = data.trickWinnerNameToShow;
+        TrickWinnerText.enabled = trickWinnerName != null;
+        if(trickWinnerName != null)
+        {
+            TrickWinnerText.text = trickWinnerName + " won the trick";
+        }
+
+        if (data.isTrickWinner)
+        {
+            if(ThrownCard != null)
+            {
+                ThrownCard.GetComponent<CardVisualBehavior>().EnableHighlight(true);
+            }
+        }
     }
     public void Initialize()
     {
@@ -57,9 +75,7 @@ public class PlayerSelfViewBehavior : MonoBehaviour
     private void onCardSelected(GameObject sourceCardGameObject, Card card)
     {
         //sourceCardGameObject will be destroyed after this
-
-        // ThrownCard = sourceCardGameObject;
-        //ThrownCard.transform.SetParent(gameObject.transform); //move out of card hand
+        
         ThrownCard = cardThrowBehavior.ThrowCard(card, sourceCardGameObject.transform.position, CardTarget.transform.position); 
 
         CardSelectedEvent.Invoke(sourceCardGameObject, card);

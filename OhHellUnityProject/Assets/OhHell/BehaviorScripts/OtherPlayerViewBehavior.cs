@@ -29,6 +29,14 @@ public class OtherPlayerViewBehavior : MonoBehaviour
     public void RefreshUI(DataNeededForPlayerUI data)
     {
         playerInfoBox.UpdateUI(data);
+
+        if (data.isTrickWinner)
+        {
+            if (ThrownCard != null)
+            {
+                ThrownCard.GetComponent<CardVisualBehavior>().EnableHighlight(true);
+            }
+        }
     }
 
     public void OnNewRound(List<Card> hand, bool isIndianRound)

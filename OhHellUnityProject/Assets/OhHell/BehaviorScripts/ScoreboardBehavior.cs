@@ -60,11 +60,14 @@ public class ScoreboardBehavior : MonoBehaviour
             scoreboardPlayer.SetUI(i + 1, scoreList[i].playerName, scoreList[i].score);
             newPlayerOb.transform.localPosition = new Vector3(0.0f, 25.0f + i * -5.0f, 0.0f);
         }
+
+        HalfTimeTitleObject.SetActive(isHalfTime);
+
         string titleText = "Final Scores";
         AudioClip soundToPlay = endGameSound;
+
         if (isHalfTime)
         {
-            HalfTimeTitleObject.SetActive(true);
             titleText = "";
             soundToPlay = halfTimeSound;
         }

@@ -27,6 +27,9 @@ public class PlayerOhHell : NetworkBehaviour
     [SyncVar(hook = nameof(SetCurrentScore))]
     public int CurrentScore;
 
+    [SyncVar]
+    public int ScoreLastRound;
+
     [SyncVar(hook = nameof(SetIsMyTurn))]
     public bool IsMyTurn;
 
@@ -72,7 +75,7 @@ public class PlayerOhHell : NetworkBehaviour
         CurrentRoundBid = newVal;
         UpdateSelfPlayerUI();
     }
-
+      
     private void UpdateSelfPlayerUI()
     {
         DataNeededForPlayerUI data = SelfGatherDataNeededForPlayerUI();
@@ -103,6 +106,16 @@ public class PlayerOhHell : NetworkBehaviour
         {
             bidToShow = null;
         }
+
+        bool isTrickWinner = false;
+        if(gameManager != null)
+        {
+            isTrickWinner = gameManager.PlayerIsTrickWinner(this);
+        }
+        else
+        {
+
+        }
         return new DataNeededForPlayerUI
         {
             leadingSuit = gameManager?.GetLeadingSuit(),
@@ -112,6 +125,8 @@ public class PlayerOhHell : NetworkBehaviour
             currentBid = bidToShow,
             currentScore = CurrentScore,
             playerName = PlayerName,
+            isTrickWinner = isTrickWinner,
+            trickWinnerNameToShow = gameManager?.GetTrickWinnerName(),
         };
 
     }
@@ -142,15 +157,6 @@ public class PlayerOhHell : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void YourTurn()
-    {
-        if (isLocalPlayer)
-        {
-           // playerSelfViewBehavior.OnMyTurn();
-        }
-    }
-
-    [ClientRpc]
     public void PlayCard(Card card)
     {
         if (!isLocalPlayer)
@@ -158,6 +164,7 @@ public class PlayerOhHell : NetworkBehaviour
             otherPlayerViewBehavior.PlayCard(card);
         }
     }
+
 
     [ClientRpc]
     public void TrickEnd()
