@@ -9,6 +9,7 @@ public class MoveToPoint : MonoBehaviour
     public float speed;
     UnityEvent OnReachTargetEvent;
     bool eventRaised;
+    public Transform TargetTransform; //has pri
 
     private void Awake()
     {
@@ -32,14 +33,19 @@ public class MoveToPoint : MonoBehaviour
         {
             return;
         }
+        Vector3 pointToTarget = targetPoint;
+        if(TargetTransform != null)
+        {
+            pointToTarget = TargetTransform.position;
+        }
         Vector3 currentPoint = transform.position;
-        float distToTarget = (targetPoint - currentPoint).magnitude;
-        Vector3 dirToTarget = (targetPoint - currentPoint).normalized;
+        float distToTarget = (pointToTarget - currentPoint).magnitude;
+        Vector3 dirToTarget = (pointToTarget - currentPoint).normalized;
         Vector3 vectorToMove = dirToTarget * speed;
         Vector3 newPosition = currentPoint + vectorToMove;
         if(distToTarget <= speed)
         {
-            newPosition = targetPoint;
+            newPosition = pointToTarget;
             OnReachTargetEvent.Invoke();
             eventRaised = true;
         }

@@ -6,6 +6,7 @@ public class SpawnPointBehavior : MonoBehaviour
 {
     public List<Transform> Spawns;
     public List<Transform> CardTargets;
+    public List<Transform> HandPoints;
 
     public Vector3 GetSpawnPoint(int numPlayers, int relativeIndex)
     {
@@ -29,6 +30,17 @@ public class SpawnPointBehavior : MonoBehaviour
         //float distToThrow = distToTarget - desiredDisFromCenter;
         //Vector3 relative = directionToTarget * distToThrow;
         //return spawn + relative;
+    }
+    //set index to -1 for local
+    public Vector3 GetHandPoint(int numPlayers, int relativeIndex)
+    {
+        if(relativeIndex == -1)
+        {
+            return HandPoints[7].position;
+        }
+        List<int> spawnsToUse = SpawnsToUse(numPlayers);
+        int spawnNum = spawnsToUse[relativeIndex];
+        return HandPoints[spawnNum].position;
     }
 
     private List<int> SpawnsToUse(int numPlayers)

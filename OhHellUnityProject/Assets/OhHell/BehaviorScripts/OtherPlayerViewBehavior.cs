@@ -8,6 +8,7 @@ public class OtherPlayerViewBehavior : MonoBehaviour
 {
     public GameObject CardSpawnPoint;
     public GameObject CardTargetPoint;
+    public CardThrowBehavior cardThrowBehavior;
 
     private GameObject IndianCard;
     private GameObject ThrownCard;
@@ -36,10 +37,11 @@ public class OtherPlayerViewBehavior : MonoBehaviour
         {
             Card card = hand[0];
             Vector3 cardSpawn = CardSpawnPoint.transform.position;
-            IndianCard = GetComponent<CardThrowBehavior>().ThrowCard(card, cardSpawn, cardSpawn);
-            Vector3 curPos = IndianCard.transform.position;
-            Vector3 newPos = new Vector3(curPos.x, curPos.y, -0.1f);
-            IndianCard.transform.position = newPos;
+            Vector3 higher = new Vector3(cardSpawn.x, cardSpawn.y, cardSpawn.z - 0.6f);
+            IndianCard = cardThrowBehavior.ThrowCard(card, higher, higher, true);
+           // Vector3 curPos = IndianCard.transform.position;
+           // Vector3 newPos = new Vector3(curPos.x, curPos.y, curPos.z - 1.0f);
+           /// IndianCard.transform.position = newPos;
 
         }
     }
@@ -51,7 +53,7 @@ public class OtherPlayerViewBehavior : MonoBehaviour
             Destroy(IndianCard);
             IndianCard = null;
         }
-        ThrownCard = GetComponent<CardThrowBehavior>().ThrowCard(card, CardSpawnPoint.transform.position, CardTargetPoint.transform.position);
+        ThrownCard = cardThrowBehavior.ThrowCard(card, CardSpawnPoint.transform.position, CardTargetPoint.transform.position);
     }
 
 

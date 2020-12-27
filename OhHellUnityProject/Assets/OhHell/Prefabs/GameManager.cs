@@ -6,12 +6,10 @@ using UnityEngine;
 public class SyncListUInt : SyncList<uint> { }
 public class GameManager : NetworkBehaviour
 {
-    public List<GameObject> PlayerSpawnPoints;
-    public List<GameObject> CardSpawnPoints;
-
     public List<PlayerOhHell> players; //only works on server
     public SyncListUInt playerIds = new SyncListUInt();
     public SpawnPointBehavior spawnPointBehavior;
+    private int MaxHand = 6; //6 for final
 
     [SyncVar]
     public Card TrumpCard;
@@ -148,6 +146,13 @@ public class GameManager : NetworkBehaviour
         }
         StartRound();
     }
+    private void InitiateScoreboard(bool isHalfTime)
+    {
+        foreach (PlayerOhHell player in players)
+        {
+            player.InitiateScoreboard(isHalfTime);
+        }
+    }
     private void StartRound()
     {
         if (isServer)
@@ -156,26 +161,29 @@ public class GameManager : NetworkBehaviour
             TricksPlayedThisRound = 0;
             if (RoundCardNumDecreasing)
             {
-                CurrentRoundCardNum--;
+                if(CurrentRoundCardNum == 1)
+                {
+                    IsIndianRound = true;
+                }
+                else
+                {
+                    CurrentRoundCardNum--;
+                }
             }
             else
             {
                 CurrentRoundCardNum++;
-                if (CurrentRoundCardNum > 6)
+                if (CurrentRoundCardNum > (MaxHand-1)) 
                 {
-                    CurrentRoundCardNum = 5;
                     RoundCardNumDecreasing = true;
                 }
             }
             foreach (PlayerOhHell player in players)
             {
-                //IsIndianRound
-                bool isIndian = false;
-                CurrentRoundCardNum = 6;
-                player.RoundStart(deck.DrawHand(CurrentRoundCardNum), isIndian);
+                player.RoundStart(deck.DrawHand(CurrentRoundCardNum), IsIndianRound);
             }
             TrumpCard = deck.DrawCard();
-           // currentTurnPlayerIndex = roundFirstLeader;
+
         }
 
         this.StartCoroutine(() =>
@@ -323,10 +331,36 @@ public class GameManager : NetworkBehaviour
             {
                 roundFirstLeader = 0;
             }
-            this.StartCoroutine(() =>
+
+            float roundStartDelay = 0.5f;
+            float halfTimeLength = NumPlayers() + 5.0f;
+
+            bool doHalfTime = CurrentRoundCardNum == MaxHand;
+            bool startAnotherRound = !IsIndianRound;
+            if (doHalfTime)
             {
-                StartRound();
-            }, 0.5f);
+                this.StartCoroutine(() =>
+                {
+                    InitiateScoreboard(true);
+                }, 0.5f);
+                roundStartDelay += halfTimeLength;
+            }
+
+            if (startAnotherRound)
+            {
+                this.StartCoroutine(() =>
+                {
+                    StartRound();
+                }, roundStartDelay);
+            }
+            else
+            {
+                //gameend
+                this.StartCoroutine(() =>
+                {
+                    InitiateScoreboard(false);
+                }, 0.5f);
+            }
         }
         else
         {
@@ -342,6 +376,17 @@ public class GameManager : NetworkBehaviour
             return "You";
         }
         return localList[roundFirstLeader].PlayerName;
+    }
+    public List<ScorePair> GetScores()
+    {
+        List<ScorePair> scoreList = new List<ScorePair>();
+        List<PlayerOhHell> localList = GetLocalPlayerList();
+        foreach(PlayerOhHell pl in localList)
+        {
+            scoreList.Add(new ScorePair(pl.PlayerName, pl.CurrentScore));
+        }
+        scoreList.Sort();
+        return scoreList;
     }
     public CardSuit? GetTrumpSuit()
     {

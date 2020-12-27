@@ -3,9 +3,9 @@ using System.Collections;
 
 public class CardThrowBehavior : MonoBehaviour
 {
-
     public GameObject CardPrefab;
-    public GameObject ThrowCard(Card card, Vector3 spawnPoint, Vector3 targetPoint)
+    public AudioClip PlayCardSound;
+    public GameObject ThrowCard(Card card, Vector3 spawnPoint, Vector3 targetPoint, bool noNoise = false)
     {
         GameObject newObj = Instantiate(CardPrefab);
         newObj.GetComponent<CardVisualBehavior>().SetCard((card));
@@ -14,6 +14,10 @@ public class CardThrowBehavior : MonoBehaviour
         MoveToPoint moveToPoint = newObj.AddComponent<MoveToPoint>();
         moveToPoint.targetPoint = targetPoint;
         moveToPoint.speed = 2.0f;
+        if (!noNoise)
+        {
+            GetComponent<AudioSource>().PlayOneShot(PlayCardSound);
+        }
         return newObj;
     }
     // Use this for initialization

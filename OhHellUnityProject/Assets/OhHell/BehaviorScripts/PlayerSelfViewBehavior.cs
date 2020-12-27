@@ -19,6 +19,7 @@ public class PlayerSelfViewBehavior : MonoBehaviour
 {
     public CardHandBehavior cardHandBehavior;
     public TextMeshPro TurnText;
+    public CardThrowBehavior cardThrowBehavior;
 
     public GameObject CardTarget;
     public CardBehavior TrumpCardScript;
@@ -31,8 +32,10 @@ public class PlayerSelfViewBehavior : MonoBehaviour
     public PlayerInfoBoxBehavior playerInfoBox;
 
     public AudioClip DealSound;
+    public GameObject ScoreBoardPrefab;
 
     private BidUIBehavior ActiveBidUI;
+    private ScoreboardBehavior ActiveScoreBoardUI;
     public void Awake()
     {
         CardSelectedEvent = new CardEvent();
@@ -57,7 +60,7 @@ public class PlayerSelfViewBehavior : MonoBehaviour
 
         // ThrownCard = sourceCardGameObject;
         //ThrownCard.transform.SetParent(gameObject.transform); //move out of card hand
-        ThrownCard = GetComponent<CardThrowBehavior>().ThrowCard(card, sourceCardGameObject.transform.position, CardTarget.transform.position); 
+        ThrownCard = cardThrowBehavior.ThrowCard(card, sourceCardGameObject.transform.position, CardTarget.transform.position); 
 
         CardSelectedEvent.Invoke(sourceCardGameObject, card);
     }
@@ -79,6 +82,11 @@ public class PlayerSelfViewBehavior : MonoBehaviour
 
         ActiveBidUI.BidEvent.AddListener(OnBidChosen);
         myAudioSource.PlayOneShot(DealSound);
+        if(ActiveScoreBoardUI != null)
+        {
+            Destroy(ActiveScoreBoardUI.gameObject);
+            ActiveScoreBoardUI = null;
+        }
     }
     private void OnBidChosen(int bidValue)
     {
@@ -96,5 +104,12 @@ public class PlayerSelfViewBehavior : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void ShowScores(List<ScorePair> list, bool isHalf)
+    {
+        GameObject newOb = Instantiate(ScoreBoardPrefab);
+        ActiveScoreBoardUI = newOb.GetComponent<ScoreboardBehavior>();
+        ActiveScoreBoardUI.UpdateScores(list, isHalf);
     }
 }

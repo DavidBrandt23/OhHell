@@ -174,6 +174,15 @@ public class PlayerOhHell : NetworkBehaviour
     }
 
     [ClientRpc]
+    public void InitiateScoreboard(bool isHalfTime)
+    {
+        if (isLocalPlayer)
+        {
+            playerSelfViewBehavior.ShowScores(GetGameManager().GetScores(), isHalfTime);
+        }
+    }
+
+    [ClientRpc]
     public void InitializeUI(uint newGameManagerNetId)
     {
         gameManagerNetId = newGameManagerNetId;
