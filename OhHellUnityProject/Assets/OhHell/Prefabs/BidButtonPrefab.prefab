@@ -277,11 +277,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6d693279d9c164199eedf91e91fadc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HandSprites:
-  - {fileID: 6241589125280826221, guid: 1c5dda8ae088e5747b93edf94b363574, type: 3}
-  - {fileID: 5746803027843365754, guid: 1c5dda8ae088e5747b93edf94b363574, type: 3}
-  - {fileID: -6049246818748046316, guid: 1c5dda8ae088e5747b93edf94b363574, type: 3}
-  - {fileID: -7530233712147260733, guid: 1c5dda8ae088e5747b93edf94b363574, type: 3}
-  - {fileID: 1116438285074167153, guid: 1c5dda8ae088e5747b93edf94b363574, type: 3}
-  - {fileID: 7558644115383656026, guid: 1c5dda8ae088e5747b93edf94b363574, type: 3}
-  - {fileID: 8185812635212447277, guid: 1c5dda8ae088e5747b93edf94b363574, type: 3}
+  HandSprites: {fileID: 11400000, guid: 130de58e9547e9743b0a04c6b6eaf098, type: 2}

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 public class DataNeededForPlayerUI
 {
@@ -17,12 +18,13 @@ public class DataNeededForPlayerUI
     public string trickWinnerNameToShow;
 }
 
-public class PlayerSelfViewBehavior : MonoBehaviour
+public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
 {
     public CardHandBehavior cardHandBehavior;
     public TextMeshPro TurnText;
     public TextMeshPro TrickWinnerText;
     public CardThrowBehavior cardThrowBehavior;
+    public RoundScoreMakerBehavior roundScoreMakerBehavior;
 
     public GameObject CardTarget;
     public CardBehavior TrumpCardScript;
@@ -35,10 +37,14 @@ public class PlayerSelfViewBehavior : MonoBehaviour
     public PlayerInfoBoxBehavior playerInfoBox;
 
     public AudioClip DealSound;
+    public AudioClip BidThumpSound;
+    public AudioClip BidFireSound;
     public GameObject ScoreBoardPrefab;
 
     private BidUIBehavior ActiveBidUI;
     private ScoreboardBehavior ActiveScoreBoardUI;
+    private GameObject ActiveRoundScore;
+
     public void Awake()
     {
         CardSelectedEvent = new CardEvent();
@@ -81,6 +87,19 @@ public class PlayerSelfViewBehavior : MonoBehaviour
         CardSelectedEvent.Invoke(sourceCardGameObject, card);
     }
 
+    public override void StartBidPhase(Vector3 handPos, Vector3 posToFace, int bid, bool fire)
+    {
+        base.StartBidPhase(handPos, posToFace, bid, fire);
+        myAudioSource.PlayOneShot(BidThumpSound);
+        if (fire)
+        {
+            ActiveBidObj.GetComponent<BiddingHandBehavior>().animDoneEvent.AddListener(OnBidAnimationDone);
+        }
+    }
+    private void OnBidAnimationDone()
+    {
+        myAudioSource.PlayOneShot(BidFireSound);
+    }
     public void TrickEnd()
     {
         if (ThrownCard != null)
@@ -102,6 +121,11 @@ public class PlayerSelfViewBehavior : MonoBehaviour
         {
             Destroy(ActiveScoreBoardUI.gameObject);
             ActiveScoreBoardUI = null;
+        }
+        if(ActiveRoundScore != null)
+        {
+            Destroy(ActiveRoundScore);
+            ActiveRoundScore = null;
         }
     }
     private void OnBidChosen(int bidValue)
@@ -127,5 +151,10 @@ public class PlayerSelfViewBehavior : MonoBehaviour
         GameObject newOb = Instantiate(ScoreBoardPrefab);
         ActiveScoreBoardUI = newOb.GetComponent<ScoreboardBehavior>();
         ActiveScoreBoardUI.UpdateScores(list, isHalf);
+    }
+
+    public void PostRound(int scoreLastRound, Vector3 position)
+    {
+        ActiveRoundScore = roundScoreMakerBehavior.MakeScoreObject(scoreLastRound, position);
     }
 }

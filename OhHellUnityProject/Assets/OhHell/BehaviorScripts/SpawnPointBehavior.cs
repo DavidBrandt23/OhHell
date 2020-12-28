@@ -8,6 +8,8 @@ public class SpawnPointBehavior : MonoBehaviour
     public List<Transform> CardTargets;
     public List<Transform> HandPoints;
 
+    public Transform BidCenter;
+
     public Vector3 GetSpawnPoint(int numPlayers, int relativeIndex)
     {
         List<int> spawnsToUse = SpawnsToUse(numPlayers);

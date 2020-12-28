@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,7 @@ public class GameManager : NetworkBehaviour
     public List<PlayerOhHell> players; //only works on server
     public SyncListUInt playerIds = new SyncListUInt();
     public SpawnPointBehavior spawnPointBehavior;
-    private int MaxHand = 2; //6 for final
+    private int MaxHand = 6; //6 for final
 
     [SyncVar]
     public Card TrumpCard;
@@ -93,6 +94,12 @@ public class GameManager : NetworkBehaviour
         }
         return -1;
     }
+
+    public Vector3 getBidFacingPos()
+    {
+        return spawnPointBehavior.BidCenter.position;
+    }
+
     private int NumPlayers()
     {
         return playerIds.Count;
@@ -105,6 +112,15 @@ public class GameManager : NetworkBehaviour
     public Vector3 GetPlayerCardTargetPosition(PlayerOhHell player)
     {
         return spawnPointBehavior.GetCardTarget(NumPlayers(), GetPlayerPositionIndex(player));
+    }
+    public Vector3 GetPlayerHandPosition(PlayerOhHell player)
+    {
+        int index = GetPlayerPositionIndex(player);
+        if (player.isLocalPlayer)
+        {
+            index = -1;
+        }
+        return spawnPointBehavior.GetHandPoint(NumPlayers(), index);
     }
     private int GetPlayerPositionIndex(PlayerOhHell player)
     {
@@ -154,6 +170,28 @@ public class GameManager : NetworkBehaviour
             player.InitiateScoreboard(isHalfTime);
         }
     }
+    private void InitiateBidPhase()
+    {
+        foreach (PlayerOhHell player in players)
+        {
+            player.RpcInitiateBidPhase();
+        }
+    }
+    private void EndBidPhase()
+    {
+        foreach (PlayerOhHell player in players)
+        {
+            player.RpcEndBidPhase();
+        }
+    }
+    private void StartPostRound()
+    {
+        foreach (PlayerOhHell player in players)
+        {
+            player.RpcStartPostRound();
+        }
+    }
+
     private void StartRound()
     {
         if (isServer)
@@ -219,15 +257,26 @@ public class GameManager : NetworkBehaviour
         }
         if (allPlayersBid)
         {
-            ShowOtherBids = true;
-            currentTurnPlayerIndex = roundFirstLeader;
-            players[currentTurnPlayerIndex].IsMyTurn = true;
-            //get ShowOtherBids change
+            InitiateBidPhase();
             this.StartCoroutine(() =>
             {
-                UpdateAllPlayerUIs();
-            }, 0.1f);
+                StartRoundAfterBids();
+            }, 8.0f);
         }
+        UpdateAllPlayerUIs();
+    }
+
+    private void StartRoundAfterBids()
+    {
+        EndBidPhase();
+        ShowOtherBids = true;
+        currentTurnPlayerIndex = roundFirstLeader;
+        players[currentTurnPlayerIndex].IsMyTurn = true;
+        //get ShowOtherBids change
+        this.StartCoroutine(() =>
+        {
+            UpdateAllPlayerUIs();
+        }, 0.1f);
     }
 
     private void UpdateAllPlayerUIs()
@@ -331,11 +380,14 @@ public class GameManager : NetworkBehaviour
         {
             foreach (PlayerOhHell player in players)
             {
-                player.CurrentScore += player.TricksThisRound;
+                int roundScore = player.TricksThisRound;
                 if (player.TricksThisRound == player.CurrentRoundBid)
                 {
-                    player.CurrentScore += 10;
+                    roundScore += 10;
                 }
+                player.ScoreLastRound = roundScore;
+                player.CurrentScore += roundScore;
+
                 player.TricksThisRound = 0;
                 player.CurrentRoundBid = -1;
             }
@@ -345,7 +397,8 @@ public class GameManager : NetworkBehaviour
                 roundFirstLeader = 0;
             }
 
-            float roundStartDelay = 0.5f;
+            float timeForRoundScores = 5.0f;
+            float roundStartDelay = timeForRoundScores;
             float halfTimeLength = NumPlayers() + 5.0f;
 
             bool doHalfTime = CurrentRoundCardNum == MaxHand;
@@ -355,7 +408,7 @@ public class GameManager : NetworkBehaviour
                 this.StartCoroutine(() =>
                 {
                     InitiateScoreboard(true);
-                }, 0.5f);
+                }, timeForRoundScores);
                 roundStartDelay += halfTimeLength;
             }
 
@@ -363,16 +416,21 @@ public class GameManager : NetworkBehaviour
             {
                 this.StartCoroutine(() =>
                 {
+                    StartPostRound();
+                }, 0.5f);
+
+                this.StartCoroutine(() =>
+                {
                     StartRound();
                 }, roundStartDelay);
             }
             else
             {
-                //gameend
+                //game end
                 this.StartCoroutine(() =>
                 {
                     InitiateScoreboard(false);
-                }, 0.5f);
+                }, timeForRoundScores);
             }
         }
         else
@@ -389,6 +447,18 @@ public class GameManager : NetworkBehaviour
             return "You";
         }
         return localList[roundFirstLeader].PlayerName;
+    }
+    public bool DidAnyBidFire()
+    {
+        List<PlayerOhHell> localList = GetLocalPlayerList();
+        foreach (PlayerOhHell p in localList)
+        {
+            if(p.CurrentRoundBid >= 4)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     public bool PlayerIsTrickWinner(PlayerOhHell pl)
     {

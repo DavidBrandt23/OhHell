@@ -72,6 +72,20 @@ public class PlayerOhHell : NetworkBehaviour
     }
     void SetCurrentRoundBid(int oldVal, int newVal)
     {
+        GameManager gameManager = GetGameManager();
+        Vector3 handPos = gameManager.GetPlayerHandPosition(this);
+        Vector3 facingPos = gameManager.getBidFacingPos();
+        if (oldVal == -1)
+        {
+            if (isLocalPlayer)
+            {
+                playerSelfViewBehavior.CreateBidHand(handPos, facingPos);
+            }
+            else
+            {
+                otherPlayerViewBehavior.CreateBidHand(handPos, facingPos);
+            }
+        }
         CurrentRoundBid = newVal;
         UpdateSelfPlayerUI();
     }
@@ -177,6 +191,50 @@ public class PlayerOhHell : NetworkBehaviour
         else
         {
             otherPlayerViewBehavior.TrickEnd();
+        }
+    }
+
+    [ClientRpc]
+    public void RpcStartPostRound()
+    {
+        GameManager gameManager = GetGameManager();
+        Vector3 handPos = gameManager.GetPlayerHandPosition(this);
+        if (isLocalPlayer)
+        {
+            playerSelfViewBehavior.PostRound(ScoreLastRound, handPos);
+        }
+        else
+        {
+            otherPlayerViewBehavior.PostRound(ScoreLastRound, handPos);
+        }
+    }
+
+    [ClientRpc]
+    public void RpcInitiateBidPhase()
+    {
+        GameManager gameManager = GetGameManager();
+        Vector3 handPos = gameManager.GetPlayerHandPosition(this);
+        Vector3 facingPos = gameManager.getBidFacingPos();
+        bool fire = gameManager.DidAnyBidFire();
+        if (isLocalPlayer)
+        {
+            playerSelfViewBehavior.StartBidPhase(handPos, facingPos, CurrentRoundBid, fire);
+        }
+        else
+        {
+            otherPlayerViewBehavior.StartBidPhase(handPos, facingPos, CurrentRoundBid, fire);
+        }
+    }
+    [ClientRpc]
+    public void RpcEndBidPhase()
+    {
+        if (isLocalPlayer)
+        {
+            playerSelfViewBehavior.EndBidPhase();
+        }
+        else
+        {
+            otherPlayerViewBehavior.EndBidPhase();
         }
     }
 

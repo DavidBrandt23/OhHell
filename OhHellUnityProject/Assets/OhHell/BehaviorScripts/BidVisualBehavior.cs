@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class BidVisualBehavior : MonoBehaviour
 {
-    public List<Sprite> HandSprites;
+    public SpriteList HandSprites;
 
     public void UpdateUI(int bid)
     {
-        GetComponent<SpriteRenderer>().sprite = HandSprites[bid];
+        GetComponent<SpriteRenderer>().sprite = HandSprites.GetSprite(bid);
     }
     // Start is called before the first frame update
     void Start()

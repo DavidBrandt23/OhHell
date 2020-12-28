@@ -224,6 +224,7 @@ Transform:
   - {fileID: 653930209}
   - {fileID: 2492427692164913824}
   - {fileID: 1295991818989104759}
+  - {fileID: 2073836218036872666}
   m_Father: {fileID: 5575032513075413672}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -255,7 +256,16 @@ MonoBehaviour:
   - {fileID: 7365951014616059474}
   - {fileID: 2934305916454727007}
   - {fileID: 1967129960474253976}
-  HandPoints: []
+  HandPoints:
+  - {fileID: 3334783396105527229}
+  - {fileID: 5036307245684990391}
+  - {fileID: 577368435983575846}
+  - {fileID: 3444450677047357600}
+  - {fileID: 8882565998712888974}
+  - {fileID: 2001150470768075992}
+  - {fileID: 1623361136769382966}
+  - {fileID: 4087582436751378606}
+  BidCenter: {fileID: 2073836218036872666}
 --- !u!1 &1892133804
 GameObject:
   m_ObjectHideFlags: 0
@@ -1784,6 +1794,36 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &8320401557351055766
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2073836218036872666}
+  m_Layer: 0
+  m_Name: BidCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2073836218036872666
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8320401557351055766}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1879810834}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8604331216361719680
 GameObject:
   m_ObjectHideFlags: 0
