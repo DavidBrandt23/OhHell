@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class MessageDisplayer : MonoBehaviour
 {
     public Text text;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -17,6 +18,7 @@ public class MessageDisplayer : MonoBehaviour
     {
         
     }
+
     public void SetMessage(string message)
     {
         text.text = message;

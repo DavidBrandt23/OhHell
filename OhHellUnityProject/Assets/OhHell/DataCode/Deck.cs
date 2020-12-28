@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Deck
 {
     private List<Card> Cards;
+
     public Deck()
     {
         Cards = new List<Card>();
@@ -14,6 +15,7 @@ public class Deck
         }
         Shuffle();
     }
+
     private void AddSuit(CardSuit suit)
     {
         for (int i = 1; i < 14; i++)
@@ -21,6 +23,7 @@ public class Deck
             Cards.Add(new Card(suit, i));
         }
     }
+
     private void Shuffle()
     {
         for (int i = 0; i < 1000; i++)
@@ -31,6 +34,7 @@ public class Deck
             Cards.Insert(newPos, card);
         }
     }
+
     public Card DrawCard()
     {
         Card card = Cards[0];

@@ -7,7 +7,6 @@ public class SpawnPointBehavior : MonoBehaviour
     public List<Transform> Spawns;
     public List<Transform> CardTargets;
     public List<Transform> HandPoints;
-
     public Transform BidCenter;
 
     public Vector3 GetSpawnPoint(int numPlayers, int relativeIndex)
@@ -22,18 +21,9 @@ public class SpawnPointBehavior : MonoBehaviour
         List<int> spawnsToUse = SpawnsToUse(numPlayers);
         int spawnNum = spawnsToUse[relativeIndex];
         return CardTargets[spawnNum].position;
-
-        //Vector3 spawn = GetSpawnPoint(numPlayers, relativeIndex);
-        //Vector3 cardTargetCenter = CardTargetCenter.position;
-        //Vector3 vectorToTarget = (cardTargetCenter - spawn);
-        //float distToTarget = vectorToTarget.magnitude;
-        //Vector3 directionToTarget = vectorToTarget.normalized;
-        //float desiredDisFromCenter = 25.0f;
-        //float distToThrow = distToTarget - desiredDisFromCenter;
-        //Vector3 relative = directionToTarget * distToThrow;
-        //return spawn + relative;
     }
-    //set index to -1 for local
+
+    //set relativeIndex to -1 for local player
     public Vector3 GetHandPoint(int numPlayers, int relativeIndex)
     {
         if(relativeIndex == -1)

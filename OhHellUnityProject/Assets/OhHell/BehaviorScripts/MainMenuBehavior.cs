@@ -10,8 +10,7 @@ public class MainMenuBehavior : MonoBehaviour
     public SelectableObjectBehavior joinHostSelBeh;
     public SelectableObjectBehavior startHostSelBeh;
     public GameObject HostGameButton;
-
-
+    
     // Use this for initialization
     void Start()
     {
@@ -20,6 +19,7 @@ public class MainMenuBehavior : MonoBehaviour
             nameField.text = "David" + Random.Range(1, 1000);
             ipField.text = "localhost";
         }
+
         if (Application.platform == RuntimePlatform.WebGLPlayer)
         {
             HostGameButton.SetActive(false);

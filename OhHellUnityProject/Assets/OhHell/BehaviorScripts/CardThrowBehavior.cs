@@ -5,6 +5,7 @@ public class CardThrowBehavior : MonoBehaviour
 {
     public GameObject CardPrefab;
     public AudioClip PlayCardSound;
+
     public GameObject ThrowCard(Card card, Vector3 spawnPoint, Vector3 targetPoint, bool noNoise = false)
     {
         GameObject newObj = Instantiate(CardPrefab);
@@ -19,16 +20,5 @@ public class CardThrowBehavior : MonoBehaviour
             GetComponent<AudioSource>().PlayOneShot(PlayCardSound);
         }
         return newObj;
-    }
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

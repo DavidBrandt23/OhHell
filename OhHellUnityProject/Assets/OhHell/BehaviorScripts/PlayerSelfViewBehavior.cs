@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+
 public class DataNeededForPlayerUI
 {
     public string playerName;
@@ -32,7 +33,6 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
     public BidSelectedEvent BidEvent;
     public CardEvent CardSelectedEvent;
 
-    private GameObject ThrownCard;
     public AudioSource myAudioSource;
     public PlayerInfoBoxBehavior playerInfoBox;
 
@@ -41,6 +41,7 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
     public AudioClip BidFireSound;
     public GameObject ScoreBoardPrefab;
 
+    private GameObject ThrownCard;
     private BidUIBehavior ActiveBidUI;
     private ScoreboardBehavior ActiveScoreBoardUI;
     private GameObject ActiveRoundScore;
@@ -51,6 +52,7 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
 
         BidEvent = new BidSelectedEvent();
     }
+
     public void RefreshUI(DataNeededForPlayerUI data)
     {
         cardHandBehavior.SetSelectableCards(data.isMyTurn, data.leadingSuit);
@@ -62,7 +64,7 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
         TrickWinnerText.enabled = trickWinnerName != null;
         if(trickWinnerName != null)
         {
-            TrickWinnerText.text = trickWinnerName + " won the trick";
+            TrickWinnerText.text = trickWinnerName + " won the trick.";
         }
 
         if (data.isTrickWinner)
@@ -73,11 +75,13 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
             }
         }
     }
+
     public void Initialize()
     {
         cardHandBehavior.SetSelectableCards(false);
         cardHandBehavior.ClickCardEvent.AddListener(onCardSelected);
     }
+
     private void onCardSelected(GameObject sourceCardGameObject, Card card)
     {
         //sourceCardGameObject will be destroyed after this
@@ -96,10 +100,12 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
             ActiveBidObj.GetComponent<BiddingHandBehavior>().animDoneEvent.AddListener(OnBidAnimationDone);
         }
     }
+
     private void OnBidAnimationDone()
     {
         myAudioSource.PlayOneShot(BidFireSound);
     }
+
     public void TrickEnd()
     {
         if (ThrownCard != null)
@@ -108,6 +114,7 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
             ThrownCard = null;
         }
     }
+
     public void OnNewRound(List<Card> newCards, string trickLeaderName, bool isIndianRound)
     {
         cardHandBehavior.SetCards(newCards, isIndianRound);
@@ -132,18 +139,6 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
     {
         BidEvent.Invoke(bidValue);
         Destroy(ActiveBidUI.gameObject);
-    }
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void ShowScores(List<ScorePair> list, bool isHalf)

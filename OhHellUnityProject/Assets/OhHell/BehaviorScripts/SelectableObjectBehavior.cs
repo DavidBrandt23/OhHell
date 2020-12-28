@@ -5,11 +5,13 @@ using UnityEngine.Events;
 [RequireComponent(typeof(BoxCollider2D))]
 public class SelectableObjectBehavior : MonoBehaviour
 {
-    private SpriteRenderer spriteRenderer;
     public UnityEvent clicked;
+    public bool enabledOnAwake;
+
     private bool _clickEnabled;
     private bool mouseIsOver;
-    public bool enabledOnAwake;
+    private SpriteRenderer spriteRenderer;
+
     public bool ClickEnabled
     {
         get { return _clickEnabled; }
@@ -22,11 +24,9 @@ public class SelectableObjectBehavior : MonoBehaviour
 
     public void Awake()
     {
-        //ClickEnabled = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
         ClickEnabled = enabledOnAwake;
         SetColorCorrectly();
-        //   clicked = new UnityEvent();
     }
 
     void OnMouseOver()
@@ -40,15 +40,17 @@ public class SelectableObjectBehavior : MonoBehaviour
         mouseIsOver = false;
         SetColorCorrectly();
     }
+
     private void SetColorCorrectly()
     {
-        spriteRenderer.color = GetColorToUser(ClickEnabled, mouseIsOver);
+        spriteRenderer.color = GetColorToUse(ClickEnabled, mouseIsOver);
     }
+
     private void OnMouseDown()
     {
     }
 
-    private static Color GetColorToUser(bool clickEnabled, bool hovered)
+    private static Color GetColorToUse(bool clickEnabled, bool hovered)
     {
         if (!clickEnabled)
         {

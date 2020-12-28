@@ -35,19 +35,12 @@ public class PlayerOhHell : NetworkBehaviour
 
     private OtherPlayerViewBehavior otherPlayerViewBehavior;
     private PlayerSelfViewBehavior playerSelfViewBehavior;
+
     private void Update()
     {
-
         if (Input.GetKeyUp("space"))
         {
-          //  SceneManager.LoadScene("MenuScene");
-            // List<Card> newHand = GetRandomHand();
-            // SetCards(newHand);
         }
-    }
-
-    void FixedUpdate()
-    {
     }
 
     void SetPlayerName(string oldVal, string newVal)
@@ -55,21 +48,25 @@ public class PlayerOhHell : NetworkBehaviour
         PlayerName = newVal;
         UpdateSelfPlayerUI();
     }
+
     void SetIsMyTurn(bool oldVal, bool newVal)
     {
         IsMyTurn = newVal;
         UpdateSelfPlayerUI();
     }
+
     void SetCurrentScore(int oldVal, int newVal)
     {
         CurrentScore = newVal;
         UpdateSelfPlayerUI();
     }
+
     void SetTricks(int oldVal, int newVal)
     {
         TricksThisRound = newVal;
         UpdateSelfPlayerUI();
     }
+
     void SetCurrentRoundBid(int oldVal, int newVal)
     {
         GameManager gameManager = GetGameManager();
@@ -102,6 +99,7 @@ public class PlayerOhHell : NetworkBehaviour
             otherPlayerViewBehavior?.RefreshUI(data);
         }
     }
+
     private DataNeededForPlayerUI SelfGatherDataNeededForPlayerUI()
     {
         GameManager gameManager = GetGameManager();
@@ -144,9 +142,9 @@ public class PlayerOhHell : NetworkBehaviour
         };
 
     }
-    //On client
+
     [ClientRpc]
-    public void RoundStart(List<Card> hand, bool isIndianRound)
+    public void RpcRoundStart(List<Card> hand, bool isIndianRound)
     {
         if (isLocalPlayer)
         {
@@ -160,18 +158,9 @@ public class PlayerOhHell : NetworkBehaviour
         }
     }
 
+    //server calls this on player objects when a remote player plays a card
     [ClientRpc]
-    public void Display(string message)
-    {
-        if (isLocalPlayer)
-        {
-            //otherPlayerViewBehavior.messageDisplayer.SetMessage(message);
-
-        }
-    }
-
-    [ClientRpc]
-    public void PlayCard(Card card)
+    public void RpcPlayCard(Card card)
     {
         if (!isLocalPlayer)
         {
@@ -179,9 +168,8 @@ public class PlayerOhHell : NetworkBehaviour
         }
     }
 
-
     [ClientRpc]
-    public void TrickEnd()
+    public void RpcTrickEnd()
     {
         if (isLocalPlayer)
         {
@@ -225,6 +213,7 @@ public class PlayerOhHell : NetworkBehaviour
             otherPlayerViewBehavior.StartBidPhase(handPos, facingPos, CurrentRoundBid, fire);
         }
     }
+
     [ClientRpc]
     public void RpcEndBidPhase()
     {
@@ -239,7 +228,7 @@ public class PlayerOhHell : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void InitiateScoreboard(bool isHalfTime)
+    public void RpcInitiateScoreboard(bool isHalfTime)
     {
         if (isLocalPlayer)
         {
@@ -248,7 +237,7 @@ public class PlayerOhHell : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void InitializeUI(uint newGameManagerNetId)
+    public void RpcInitializeUI(uint newGameManagerNetId)
     {
         gameManagerNetId = newGameManagerNetId;
         if (isLocalPlayer)
@@ -268,25 +257,16 @@ public class PlayerOhHell : NetworkBehaviour
             otherPlayerViewBehavior.CardTargetPoint.transform.position = GetGameManager().GetPlayerCardTargetPosition(this);
             UpdateSelfPlayerUI();
         }
-
     }
 
     [ClientRpc]
-    public void SendSelfUIUpdate()
+    public void RpcSendSelfUIUpdate()
     {
         UpdateSelfPlayerUI();
     }
 
-    private void OnCardChosen(GameObject sourceObj, Card card)
-    {
-        CmdCardChosen(card);
-    }
-    private void OnBidChosen(int bid)
-    {
-        CmdBidChosen(bid);
-    }
     [ClientRpc]
-    public void GetInputPlayerName()
+    public void RpcGetInputPlayerName()
     {
         if (isLocalPlayer)
         {
@@ -295,36 +275,45 @@ public class PlayerOhHell : NetworkBehaviour
             CmdUpdatePlayerInputName(name);
         }
     }
+
     [Command]
     public void CmdUpdatePlayerInputName(string name)
     {
         PlayerName = name;
         GameObject.Find("NetworkManager").GetComponent<NetworkManagerOhHell>().UpdateLobbyNames();
     }
-
-    //SERVER
+    
     [Command]
     public void CmdCardChosen(Card card)
     {
-        PlayCard(card); //send to other clients
+        RpcPlayCard(card); //send to other clients
         GetGameManager().CardChosen(this, card);
     }
-    //SERVER
+
     [Command]
     public void CmdBidChosen(int bid)
     {
         CurrentRoundBid = bid;
-        //PlayCard(card); //send to other clients
         GetGameManager().BidChosen(this);
     }
+
     private GameManager GetGameManager()
     {
         if (NetworkIdentity.spawned.TryGetValue(gameManagerNetId, out NetworkIdentity identity))
         {
             return identity.gameObject.GetComponent<GameManager>();
         }
-        Debug.Log("failed to get gamemanager using ID + " + gameManagerNetId);
+
         return null;
     }
 
+    private void OnCardChosen(GameObject sourceObj, Card card)
+    {
+        CmdCardChosen(card);
+    }
+
+    private void OnBidChosen(int bid)
+    {
+        CmdBidChosen(bid);
+    }
 }

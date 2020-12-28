@@ -95,7 +95,7 @@ MonoBehaviour:
   myAudioSource: {fileID: 4933058704805217641}
   playerInfoBox: {fileID: 3188807859506603024}
   DealSound: {fileID: 8300000, guid: 83330edfd49e825468c66ec653a0e10b, type: 3}
-  BidThumpSound: {fileID: 8300000, guid: bbc7a9e8f103b9041991df84c0fc1776, type: 3}
+  BidThumpSound: {fileID: 8300000, guid: 77b41b7e7e6a6c344b539512dc92a9d9, type: 3}
   BidFireSound: {fileID: 8300000, guid: 333be9e1bda1656409aa546621f2db89, type: 3}
   ScoreBoardPrefab: {fileID: 6279871749651096407, guid: e15ee7ae4d3f62e40addc48877ac2502,
     type: 3}

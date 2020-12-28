@@ -23,32 +23,57 @@ public class ScorePair : IComparable<ScorePair>
         return -1;
     }
 }
+
 public class ScoreboardBehavior : MonoBehaviour
 {
     public bool DebugMode;
     public GameObject ScoreBoardPlayerPrefab;
     public AudioClip halfTimeSound;
     public AudioClip endGameSound;
-    public TextMeshPro title;
     public GameObject HalfTimeTitleObject;
+    public GameObject FinalScoreTitleObject;
+
     private List<GameObject> playerObjects = new List<GameObject>();
+
     // Start is called before the first frame update
     void Start()
     {
         if (DebugMode)
         {
-
             List<ScorePair> list = new List<ScorePair>()
             {
-                new ScorePair("AAA",33),
-                new ScorePair("AA3333333333A",133),
-                new ScorePair("AAdfdfdfdfA",1),
-                new ScorePair("bbb",1),
+                new ScorePair("Sal",33),
+                new ScorePair("Steve",133),
+                new ScorePair("Dave",12),
+                new ScorePair("Bob",1),
+                new ScorePair("Bruce",33),
+                new ScorePair("Sara",131),
+                new ScorePair("Dakota",4),
+                new ScorePair("Terry",1),
             };
             list.Sort();
-            UpdateScores(list, true);
+            UpdateScores(list, false);
         }
     }
+
+    private int GetPlacement(int index, List<ScorePair> scoreList)
+    {
+        int place = index + 1;
+        
+        for (int i = index - 1; i >= 0; i--)
+        {
+            if(scoreList[i].score == scoreList[index].score)
+            {
+                place--;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return place;
+    }
+
     public void UpdateScores(List<ScorePair> scoreList, bool isHalfTime)
     {
         for (int i = 0; i < scoreList.Count; i++)
@@ -57,21 +82,20 @@ public class ScoreboardBehavior : MonoBehaviour
             playerObjects.Add(newPlayerOb);
             newPlayerOb.SetActive(false);
             ScoreBoardPlayerBehavior scoreboardPlayer = newPlayerOb.GetComponent<ScoreBoardPlayerBehavior>();
-            scoreboardPlayer.SetUI(i + 1, scoreList[i].playerName, scoreList[i].score);
-            newPlayerOb.transform.localPosition = new Vector3(0.0f, 25.0f + i * -5.0f, 0.0f);
+            int placement = GetPlacement(i, scoreList);
+            scoreboardPlayer.SetUI(placement, scoreList[i].playerName, scoreList[i].score);
+            newPlayerOb.transform.localPosition = new Vector3(0.0f, 16.0f + i * -5.0f, 0.0f);
         }
 
         HalfTimeTitleObject.SetActive(isHalfTime);
-
-        string titleText = "Final Scores";
+        FinalScoreTitleObject.SetActive(!isHalfTime);
+        
         AudioClip soundToPlay = endGameSound;
 
         if (isHalfTime)
         {
-            titleText = "";
             soundToPlay = halfTimeSound;
         }
-        title.text = titleText;
         GetComponent<AudioSource>().PlayOneShot(soundToPlay);
 
         this.StartCoroutine(() =>
@@ -90,10 +114,5 @@ public class ScoreboardBehavior : MonoBehaviour
                 RevealPlayer(index - 1);
             }, 1.0f);
         }
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

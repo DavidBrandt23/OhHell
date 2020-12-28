@@ -10,7 +10,6 @@ public class GameManager : NetworkBehaviour
     public List<PlayerOhHell> players; //only works on server
     public SyncListUInt playerIds = new SyncListUInt();
     public SpawnPointBehavior spawnPointBehavior;
-    private int MaxHand = 6; //6 for final
 
     [SyncVar]
     public Card TrumpCard;
@@ -20,9 +19,7 @@ public class GameManager : NetworkBehaviour
 
     [SyncVar]
     private int roundFirstLeader = 0;
-
-    private List<Card> cardsInCenter;
-
+    
     [SyncVar]
     private int LeadingSuit;
 
@@ -34,25 +31,22 @@ public class GameManager : NetworkBehaviour
 
     [SyncVar]
     private uint trickWinningPlayerId;
-
-
-    private int CurrentRoundCardNum;
+    
+    private int CurrentRoundCardNum; 
     private bool RoundCardNumDecreasing;
     private int TricksPlayedThisRound;
+    private List<Card> cardsInCenter;
+    private int MaxHand = 6; //6 for final
 
+    private PlayerOhHell TrickWinningPlayer; //keep winner id in sync
+    private Card TrickWinningCard;
 
-    // Start is called before the first frame update
     public void Awake()
     {
-        //players = new SyncList<PlayerOhHell>();
         cardsInCenter = new List<Card>();
         SetLeadingSuit(null);
-        CurrentRoundCardNum = 0;
+        CurrentRoundCardNum = 0; //0 for final version
         TricksPlayedThisRound = 0;
-    }
-    void Start()
-    {
-        
     }
 
     public List<string> GetPlayerNameList()
@@ -64,12 +58,7 @@ public class GameManager : NetworkBehaviour
         }
         return nameList;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    
     private PlayerOhHell GetLocalPlayer()
     {
         List<PlayerOhHell> localList = GetLocalPlayerList();
@@ -82,6 +71,7 @@ public class GameManager : NetworkBehaviour
         }
         return null;
     }
+
     private int GetPlayerIndex(PlayerOhHell player)
     {
         List<PlayerOhHell> localList = GetLocalPlayerList();
@@ -109,10 +99,12 @@ public class GameManager : NetworkBehaviour
     {
         return spawnPointBehavior.GetSpawnPoint(NumPlayers(), GetPlayerPositionIndex(player));
     }
+
     public Vector3 GetPlayerCardTargetPosition(PlayerOhHell player)
     {
         return spawnPointBehavior.GetCardTarget(NumPlayers(), GetPlayerPositionIndex(player));
     }
+
     public Vector3 GetPlayerHandPosition(PlayerOhHell player)
     {
         int index = GetPlayerPositionIndex(player);
@@ -122,6 +114,7 @@ public class GameManager : NetworkBehaviour
         }
         return spawnPointBehavior.GetHandPoint(NumPlayers(), index);
     }
+
     private int GetPlayerPositionIndex(PlayerOhHell player)
     {
         int playerListIndex = GetPlayerIndex(player);
@@ -134,6 +127,7 @@ public class GameManager : NetworkBehaviour
         }
         return playerIndexToUse;
     }
+
     private List<PlayerOhHell> GetLocalPlayerList()
     {
         List <PlayerOhHell> localList = new List<PlayerOhHell>();
@@ -143,33 +137,33 @@ public class GameManager : NetworkBehaviour
         }
         return localList;
     }
+
     private PlayerOhHell GetPlayerByNetId(uint targetID)
     {
         if (NetworkIdentity.spawned.TryGetValue(targetID, out NetworkIdentity identity))
         {
             return identity.gameObject.GetComponent<PlayerOhHell>();
         }
-        throw new System.Exception("failedto get ID: " + targetID);
+        throw new Exception("failed to get player with ID: " + targetID);
     }
 
-    private PlayerOhHell TrickWinningPlayer; //keep winner id in sync
-    private Card TrickWinningCard;
     public void BeginGame()
     {
-
         foreach (PlayerOhHell player in players)
         {
-            player.InitializeUI(netId);
+            player.RpcInitializeUI(netId);
         }
         StartRound();
     }
+
     private void InitiateScoreboard(bool isHalfTime)
     {
         foreach (PlayerOhHell player in players)
         {
-            player.InitiateScoreboard(isHalfTime);
+            player.RpcInitiateScoreboard(isHalfTime);
         }
     }
+
     private void InitiateBidPhase()
     {
         foreach (PlayerOhHell player in players)
@@ -177,6 +171,7 @@ public class GameManager : NetworkBehaviour
             player.RpcInitiateBidPhase();
         }
     }
+
     private void EndBidPhase()
     {
         foreach (PlayerOhHell player in players)
@@ -184,6 +179,7 @@ public class GameManager : NetworkBehaviour
             player.RpcEndBidPhase();
         }
     }
+
     private void StartPostRound()
     {
         foreach (PlayerOhHell player in players)
@@ -219,7 +215,7 @@ public class GameManager : NetworkBehaviour
             }
             foreach (PlayerOhHell player in players)
             {
-                player.RoundStart(deck.DrawHand(CurrentRoundCardNum), IsIndianRound);
+                player.RpcRoundStart(deck.DrawHand(CurrentRoundCardNum), IsIndianRound);
             }
             TrumpCard = deck.DrawCard();
 
@@ -229,8 +225,8 @@ public class GameManager : NetworkBehaviour
         {
             StartRound2();
         }, 0.1f);
-
     }
+
     private void StartRound2()
     {
         if (isServer)
@@ -239,12 +235,14 @@ public class GameManager : NetworkBehaviour
             {
                 player.IsMyTurn = false;
                 player.CurrentRoundBid = -1;
-                player.SendSelfUIUpdate();
+                player.RpcSendSelfUIUpdate();
             }
             ShowOtherBids = false;
         }
 
     }
+
+    //called from a PlayerOhHell Command to run on server
     public void BidChosen(PlayerOhHell pl)
     {
         bool allPlayersBid = true;
@@ -257,11 +255,15 @@ public class GameManager : NetworkBehaviour
         }
         if (allPlayersBid)
         {
-            InitiateBidPhase();
+            this.StartCoroutine(() =>
+            {
+                InitiateBidPhase();
+            }, 0.1f);
+           
             this.StartCoroutine(() =>
             {
                 StartRoundAfterBids();
-            }, 8.0f);
+            }, 6.5f);
         }
         UpdateAllPlayerUIs();
     }
@@ -283,10 +285,11 @@ public class GameManager : NetworkBehaviour
     {
         foreach (PlayerOhHell player in players)
         {
-            player.SendSelfUIUpdate();
+            player.RpcSendSelfUIUpdate();
         }
     }
 
+    //called from a PlayerOhHell Command to run on server
     public void CardChosen(PlayerOhHell pl, Card card)
     {
         if (!isServer)
@@ -296,11 +299,6 @@ public class GameManager : NetworkBehaviour
         int oldTurnPlayerIndex = currentTurnPlayerIndex;
         int newTurnPlayerIndex = currentTurnPlayerIndex;
         bool trickEnd = false, roundEnd = false;
-
-        foreach (PlayerOhHell player in players)
-        {
-            player.Display("Player " + pl.netId + " played a card: " + card.ToString());
-        }
 
         cardsInCenter.Add(card);
         if (GetLeadingSuit() == null)
@@ -347,7 +345,7 @@ public class GameManager : NetworkBehaviour
         if (trickEnd)
         {
             players[oldTurnPlayerIndex].IsMyTurn = false;
-            delay = 4.0f; //time for 'X won the trick to show' before clearing middle cards
+            delay = 3.8f; //time for 'X won the trick to show' before clearing middle cards
         }
         this.StartCoroutine(() =>
         {
@@ -368,7 +366,7 @@ public class GameManager : NetworkBehaviour
             trickWinningPlayerId = 999999;
             foreach (PlayerOhHell player in players)
             {
-                player.TrickEnd();
+                player.RpcTrickEnd();
             }
 
             this.StartCoroutine(() =>
@@ -417,7 +415,7 @@ public class GameManager : NetworkBehaviour
                 this.StartCoroutine(() =>
                 {
                     StartPostRound();
-                }, 0.5f);
+                }, 0.2f);
 
                 this.StartCoroutine(() =>
                 {
@@ -438,6 +436,7 @@ public class GameManager : NetworkBehaviour
             players[newTurnPlayerIndex].IsMyTurn = true;
         }
     }
+
     public string GetTrickLeaderName()
     {
         List<PlayerOhHell> localList = GetLocalPlayerList();
@@ -448,6 +447,7 @@ public class GameManager : NetworkBehaviour
         }
         return localList[roundFirstLeader].PlayerName;
     }
+
     public bool DidAnyBidFire()
     {
         List<PlayerOhHell> localList = GetLocalPlayerList();
@@ -460,10 +460,12 @@ public class GameManager : NetworkBehaviour
         }
         return false;
     }
+
     public bool PlayerIsTrickWinner(PlayerOhHell pl)
     {
         return pl.netId == trickWinningPlayerId;
     }
+
     public string GetTrickWinnerName()
     {
         List<PlayerOhHell> localList = GetLocalPlayerList();
@@ -487,6 +489,7 @@ public class GameManager : NetworkBehaviour
         }
         return winner.PlayerName;
     }
+
     public List<ScorePair> GetScores()
     {
         List<ScorePair> scoreList = new List<ScorePair>();
@@ -498,10 +501,12 @@ public class GameManager : NetworkBehaviour
         scoreList.Sort();
         return scoreList;
     }
+
     public CardSuit? GetTrumpSuit()
     {
         return TrumpCard?.Suit;
     }
+
     public CardSuit? GetLeadingSuit()
     {
         if(LeadingSuit == -1)
@@ -510,6 +515,7 @@ public class GameManager : NetworkBehaviour
         }
         return (CardSuit)LeadingSuit;
     }
+
     private void SetLeadingSuit(CardSuit? suit)
     {
         if (suit == null)
@@ -522,6 +528,7 @@ public class GameManager : NetworkBehaviour
         }
     }
 }
+
 public static class MonoBehaviourExtension
 {
     public static Coroutine StartCoroutine(this MonoBehaviour behaviour, System.Action action, float delay)

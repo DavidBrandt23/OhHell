@@ -15,12 +15,16 @@ public class LobbyUIBehavior : NetworkBehaviour
     public GameObject waitingForHostMessageObject;
     public UnityEvent StartEvent;
     private int numPlayers;
+    public bool DebugMode;
     // Start is called before the first frame update
     void Start()
     {
         startButtonSelectableBeh.clicked = new UnityEvent();
         startButtonSelectableBeh.clicked.AddListener(OnStartClick);
-        //SetNames(new List<string> { "sdfsf", "dsfsdfds", "sss" });
+        if (DebugMode)
+        {
+            SetNames(new List<string> { "sdfsf", "dsfsdfds", "sss" });
+        }
     }
     public void OnStartClick()
     {
@@ -41,8 +45,12 @@ public class LobbyUIBehavior : NetworkBehaviour
             {
                 playerName = names[i];
             }
-            newPlayerOb.GetComponent<TextMeshPro>().text = (i+1) + ": " + playerName;
-            newPlayerOb.transform.localPosition = new Vector3(0.0f, i * -5.0f, 0.0f);
+            newPlayerOb.GetComponent<TextMeshPro>().text = playerName;
+            newPlayerOb.transform.localPosition = new Vector3(0.0f, 12.0f+ i * -5.0f, 0.0f);
+            if (playerName == "")
+            {
+                newPlayerOb.GetComponentInChildren<SpriteRenderer>().color = new Color(0.3f,0.3f,0.3f);
+            }
         }
 
         startButtonObject.SetActive(isServer);

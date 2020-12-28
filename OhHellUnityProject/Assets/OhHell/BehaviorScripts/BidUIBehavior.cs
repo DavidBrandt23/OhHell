@@ -10,11 +10,11 @@ public class BidUIBehavior : MonoBehaviour
     public BidSelectedEvent BidEvent;
     public TextMeshPro LeaderText;
     public TextMeshPro IndianText;
+
     public void Awake()
     {
-        // SetupBidUI(3);
-        //BidEvent = new BidSelectedEvent();
     }
+
     public void SetupBidUI(int maxBid, string leaderName, bool isIndianRound)
     {
         BidEvent = new BidSelectedEvent();
@@ -31,8 +31,9 @@ public class BidUIBehavior : MonoBehaviour
             newButtonObj.transform.localPosition = new Vector3(firstCardOffset + i * cardSpacing, -3.5f, 0.0f);
         }
         IndianText.enabled = isIndianRound;
-        LeaderText.text = leaderName + " will lead the first trick";
+        LeaderText.text = leaderName + " will lead the first trick.";
     }
+
     public void OnButtonClick(int bid)
     {
         BidEvent.Invoke(bid);

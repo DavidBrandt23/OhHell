@@ -10,6 +10,7 @@ public class BidVisualBehavior : MonoBehaviour
     {
         GetComponent<SpriteRenderer>().sprite = HandSprites.GetSprite(bid);
     }
+
     // Start is called before the first frame update
     void Start()
     {

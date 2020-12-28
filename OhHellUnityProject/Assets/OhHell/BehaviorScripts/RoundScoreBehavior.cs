@@ -12,8 +12,7 @@ public class RoundScoreBehavior : MonoBehaviour
     public TextMeshPro PointText;
     public Color winColor;
     public Color failColor;
-
-    // Start is called before the first frame update
+    
     void Start()
     {
         if (debugModeOn)
@@ -34,11 +33,5 @@ public class RoundScoreBehavior : MonoBehaviour
         {
             PointText.fontSize += 20;
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

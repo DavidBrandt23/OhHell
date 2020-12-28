@@ -15,6 +15,7 @@ public class PlayerInfoBoxBehavior : MonoBehaviour
     {
         UpdateUI(data.playerName, data.currentTricks, data.currentScore, data.currentBid, data.isMyTurn, data.isTrickWinner);
     }
+
     public void UpdateUI(string name, int? tricks, int? score, int? bid, bool isMyTurn, bool isTrickWinner)
     {
         NameText.text = name;
@@ -24,20 +25,22 @@ public class PlayerInfoBoxBehavior : MonoBehaviour
         MyTurnBG.SetActive(isMyTurn);
         TrickWinBG.SetActive(isTrickWinner);
     }
-    
-    public static string BidDisplayString(int? bid)
+
+    private static string BidDisplayString(int? bid)
     {
         return "Bid: " + NullIntToString(bid);
     }
-    public static string TricksDisplayString(int? tricks)
+
+    private static string TricksDisplayString(int? tricks)
     {
         return "Tricks: " + NullIntToString(tricks);
     }
-    public static string ScoreDisplayString(int? score)
+
+    private static string ScoreDisplayString(int? score)
     {
         return "" + NullIntToString(score);
-        // return "Score: " + NullIntToString(score);
     }
+
     private static string NullIntToString(int? input)
     {
         if (input == null)

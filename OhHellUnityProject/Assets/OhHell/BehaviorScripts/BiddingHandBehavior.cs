@@ -11,8 +11,9 @@ public class BiddingHandBehavior : MonoBehaviour
     public GameObject fireObject;
     public GameObject HandObject;
     public Animator bidAnimator;
-    private int bidNum;
     public UnityEvent animDoneEvent = new UnityEvent();
+
+    private int bidNum;
     public void Awake()
     {
         bidAnimator.speed = 0;
@@ -25,23 +26,19 @@ public class BiddingHandBehavior : MonoBehaviour
     public void StartBid(int bid)
     {
         bidNum = bid;
-        bidAnimator.speed = 1.0f;
+        float speed = 2.0f;
+        bidAnimator.speed = speed;
         bidVisualBehavior.UpdateUI(0);
-        Invoke("StopBounce", 2.0f);
-        //this.StartCoroutine(() =>
-        //{
-        //    StopBounce(bid);
-        //}, 2.0f * 1);
+        float length = 0.6666f * 3.0f / speed; //anim is 40 frames at 60fps for .6666 secs
+
+        this.StartCoroutine(() =>
+        {
+            StopBounce(bid);
+        }, length);
     }
-    // Start is called before the first frame update
-    void Start()
+
+    private void StopBounce(int bid)
     {
-        //run anim 3 times
-        //anim is 40 frames at 60fps for .667 secs
-    }
-    private void StopBounce()
-    {
-        int bid = bidNum;
         bidAnimator.speed = 0;
         bidVisualBehavior.UpdateUI(bid);
         animDoneEvent.Invoke();
@@ -49,10 +46,5 @@ public class BiddingHandBehavior : MonoBehaviour
         {
             fireObject.SetActive(true);
         }
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

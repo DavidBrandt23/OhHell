@@ -19,8 +19,8 @@ public class CardVisualBehavior : MonoBehaviour
     public void EnableHighlight(bool on)
     {
         Highlight.SetActive(on);
-
     }
+
     public void SetCard(Card card, bool faceDown = false)
     {
         if (card == null)

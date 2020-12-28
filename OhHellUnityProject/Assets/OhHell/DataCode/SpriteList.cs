@@ -6,9 +6,9 @@ using System.Collections.Generic;
 public class SpriteList : ScriptableObject
 {
     public List<Sprite> Sprites;
+
     public Sprite GetSprite(int index)
     {
         return Sprites[index];
     }
-
 }

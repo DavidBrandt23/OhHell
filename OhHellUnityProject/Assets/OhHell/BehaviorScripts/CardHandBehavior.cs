@@ -3,16 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 public class CardHandBehavior : MonoBehaviour
 {
     public List<Card> Cards;
-    private List<GameObject> cardObjects;
     public GameObject CardPrefab;
     public CardEvent ClickCardEvent;
     public bool TestMode;
 
+    private List<GameObject> cardObjects;
 
     public void SetSelectableCards(bool canSelect, CardSuit? allowedSuit = null)
     {
@@ -33,6 +31,7 @@ public class CardHandBehavior : MonoBehaviour
             }
         }
     }
+
     private bool hasCardOfSuit(CardSuit suit)
     {
 
@@ -92,26 +91,10 @@ public class CardHandBehavior : MonoBehaviour
     private void OnCardClick(GameObject sourceCardGameObject, Card card)
     {
         ClickCardEvent.Invoke(sourceCardGameObject, card);
-        //old
-        //sourceCardGameObject.GetComponent<SelectableObjectBehavior>().ClickEnabled = false;
+
         Destroy(sourceCardGameObject);
         cardObjects.Remove(sourceCardGameObject);
 
-        //TODO; make this better
-        //Destroy(sourceCardGameObject.GetComponent<SelectableObjectBehavior>());
-       // sourceCardGameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f);
-
         SetSelectableCards(false);
     }
-
-
-    void Update()
-    {
-        if (Input.GetKeyUp("space"))
-        {
-           // List<Card> newHand = GetRandomHand();
-           // SetCards(newHand);
-        }
-    }
-
 }

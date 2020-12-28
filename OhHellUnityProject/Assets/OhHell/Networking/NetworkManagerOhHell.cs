@@ -8,20 +8,17 @@ using UnityEngine.SceneManagement;
 [AddComponentMenu("")]
 public class NetworkManagerOhHell : NetworkManager
 {
-    //private List<PlayerOhHell> players;
-    private GameManager gameManager;
-    private GameObject lobbyUI;
     public TMP_InputField IPField;
     public TMP_InputField PlayerNameField;
     public GameObject MainMenuObject;
     public string localPlayerName;
+
+    private GameManager gameManager;
+    private GameObject lobbyUI;
+
     public override void Start()
     {
         base.Start();
-       // players = new List<PlayerOhHell>();
-        //GameObject gameManagerOb = Instantiate(spawnPrefabs.Find(prefab => prefab.name == "GameManager"));
-        //NetworkServer.Spawn(gameManagerOb);
-        //gameManager = gameManagerOb.GetComponent<GameManager>();
     }
     
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -44,7 +41,7 @@ public class NetworkManagerOhHell : NetworkManager
         gameManager.players.Add(newPlayerScript);
         gameManager.playerIds.Add(newPlayerScript.netId);
 
-        newPlayerScript.GetInputPlayerName();
+        newPlayerScript.RpcGetInputPlayerName();
 
 
         Invoke("UpdateLobbyNames", 0.1f);
@@ -57,6 +54,7 @@ public class NetworkManagerOhHell : NetworkManager
         localPlayerName = PlayerNameField.text;
         MainMenuObject.SetActive(false);
     }
+
     public void TryJoin()
     {
         networkAddress = IPField.text;
@@ -70,6 +68,7 @@ public class NetworkManagerOhHell : NetworkManager
         Destroy(lobbyUI.gameObject);
         Invoke("StartGame2", 0.5f);
     }
+
     private void StartGame2()
     {
         gameManager.BeginGame();
@@ -80,18 +79,10 @@ public class NetworkManagerOhHell : NetworkManager
         lobbyUI.GetComponent<LobbyUIBehavior>().SetNames(gameManager.GetPlayerNameList());
     }
 
-
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         // call base functionality (actually destroys the player)
         base.OnServerDisconnect(conn);
-    }
-    private void Update()
-    {
-
-        if (Input.GetKeyUp("space"))
-        {
-        }
     }
 }
 
