@@ -2,8 +2,9 @@
 using System.Collections;
 using UnityEngine.Events;
 using Mirror;
+using System;
 
-public class Card
+public class Card : IComparable<Card>
 {
     public CardSuit Suit;
     public int Power;
@@ -53,6 +54,24 @@ public class Card
 
         return Power > otherCard.Power;
     }
+
+    public int CompareTo(Card other)
+    {
+        if(other.Suit == Suit)
+        {
+            if (other.Power < Power)
+            {
+                return 1;
+            }
+            return -1;
+        }
+
+        if((int)(other.Suit) < (int)Suit)
+        {
+            return 1;
+        }
+        return -1;
+    }
 }
 
 public class CardEvent : UnityEvent<GameObject, Card>
@@ -62,9 +81,9 @@ public class CardEvent : UnityEvent<GameObject, Card>
 public enum CardSuit
 {
     Diamond = 0,
+    Club,
     Heart,
     Spade,
-    Club
 }
 public static class CardSuixxtReaderWriterg
 {

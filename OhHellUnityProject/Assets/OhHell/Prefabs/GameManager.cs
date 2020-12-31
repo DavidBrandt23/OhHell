@@ -45,7 +45,7 @@ public class GameManager : NetworkBehaviour
     {
         cardsInCenter = new List<Card>();
         SetLeadingSuit(null);
-        CurrentRoundCardNum = 0; //0 for final version
+        CurrentRoundCardNum = 5; //0 for final version
         TricksPlayedThisRound = 0;
     }
 

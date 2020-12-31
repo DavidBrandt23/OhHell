@@ -182,6 +182,8 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   enabledOnAwake: 1
+  useSpecifiedDefaultColor: 1
+  defaultColor: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
 --- !u!1 &7812452578388286188
 GameObject:
   m_ObjectHideFlags: 0

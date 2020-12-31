@@ -49,6 +49,7 @@ public class Deck
         {
             hand.Add(DrawCard());
         }
+        hand.Sort();
         return hand;
     }
 }

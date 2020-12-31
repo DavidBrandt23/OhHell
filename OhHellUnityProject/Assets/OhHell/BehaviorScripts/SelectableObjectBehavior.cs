@@ -7,6 +7,8 @@ public class SelectableObjectBehavior : MonoBehaviour
 {
     public UnityEvent clicked;
     public bool enabledOnAwake;
+    public bool useSpecifiedDefaultColor;
+    public Color defaultColor;
 
     private bool _clickEnabled;
     private bool mouseIsOver;
@@ -50,7 +52,7 @@ public class SelectableObjectBehavior : MonoBehaviour
     {
     }
 
-    private static Color GetColorToUse(bool clickEnabled, bool hovered)
+    private Color GetColorToUse(bool clickEnabled, bool hovered)
     {
         if (!clickEnabled)
         {
@@ -63,7 +65,9 @@ public class SelectableObjectBehavior : MonoBehaviour
         }
         else
         {
-            return new Color(1.0f, 1.0f, 1.0f);
+            Color white = new Color(1.0f, 1.0f, 1.0f);
+            return useSpecifiedDefaultColor ? defaultColor : white;
+            //return new Color(1.0f, 1.0f, 1.0f);
         }
     }
 
