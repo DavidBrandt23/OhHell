@@ -97,6 +97,9 @@ MonoBehaviour:
   DealSound: {fileID: 8300000, guid: 83330edfd49e825468c66ec653a0e10b, type: 3}
   BidThumpSound: {fileID: 8300000, guid: 77b41b7e7e6a6c344b539512dc92a9d9, type: 3}
   BidFireSound: {fileID: 8300000, guid: 333be9e1bda1656409aa546621f2db89, type: 3}
+  BidCorrectSound: {fileID: 8300000, guid: c20e01fefa251154ebabd7df9c93eca1, type: 3}
+  BidWrongSound: {fileID: 8300000, guid: 3507e6b79615bb44b92f157fbb06aa20, type: 3}
+  YourTurnSound: {fileID: 8300000, guid: 6a214113396052b4d819e8f080dd279c, type: 3}
   ScoreBoardPrefab: {fileID: 6279871749651096407, guid: e15ee7ae4d3f62e40addc48877ac2502,
     type: 3}
 --- !u!82 &4933058704805217641

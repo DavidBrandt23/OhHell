@@ -5,6 +5,7 @@ using TMPro;
 public class MainMenuBehavior : MonoBehaviour
 {
     public bool DebugMode;
+    public bool DefaultToDavidIP;
     public TMP_InputField nameField;
     public TMP_InputField ipField;
     public SelectableObjectBehavior joinHostSelBeh;
@@ -18,6 +19,10 @@ public class MainMenuBehavior : MonoBehaviour
         {
             nameField.text = "David" + Random.Range(1, 1000);
             ipField.text = "localhost";
+        }
+        if (DefaultToDavidIP)
+        {
+            ipField.text = "24.196.35.248";
         }
 
         if (Application.platform == RuntimePlatform.WebGLPlayer)

@@ -39,6 +39,9 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
     public AudioClip DealSound;
     public AudioClip BidThumpSound;
     public AudioClip BidFireSound;
+    public AudioClip BidCorrectSound;
+    public AudioClip BidWrongSound;
+    public AudioClip YourTurnSound;
     public GameObject ScoreBoardPrefab;
 
     private GameObject ThrownCard;
@@ -151,5 +154,12 @@ public class PlayerSelfViewBehavior : PlayerSharedViewBehavior
     public void PostRound(int scoreLastRound, Vector3 position)
     {
         ActiveRoundScore = roundScoreMakerBehavior.MakeScoreObject(scoreLastRound, position);
+        AudioClip soundToPlay = (scoreLastRound >= 10) ? BidCorrectSound : BidWrongSound;
+        myAudioSource.PlayOneShot(soundToPlay, 0.6f);
+    }
+
+    public void PlayYourTurnSound()
+    {
+        myAudioSource.PlayOneShot(YourTurnSound, 0.4f);
     }
 }

@@ -51,6 +51,13 @@ public class PlayerOhHell : NetworkBehaviour
 
     void SetIsMyTurn(bool oldVal, bool newVal)
     {
+        if(!oldVal && newVal)
+        {
+            if (isLocalPlayer)
+            {
+                playerSelfViewBehavior?.PlayYourTurnSound();
+            }
+        }
         IsMyTurn = newVal;
         UpdateSelfPlayerUI();
     }

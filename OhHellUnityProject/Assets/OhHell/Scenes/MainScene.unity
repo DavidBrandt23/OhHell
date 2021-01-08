@@ -443,7 +443,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9e460d9025dd5548aeeceea3faf04fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugMode: 1
+  DebugMode: 0
+  DefaultToDavidIP: 0
   nameField: {fileID: 2040573273}
   ipField: {fileID: 1522031102}
   joinHostSelBeh: {fileID: 580109131}

@@ -66,11 +66,27 @@ public class Card : IComparable<Card>
             return -1;
         }
 
-        if((int)(other.Suit) < (int)Suit)
+        if(SuitSortVal(other.Suit) < SuitSortVal(Suit))
         {
             return 1;
         }
         return -1;
+    }
+
+    private int SuitSortVal(CardSuit suit)
+    {
+        switch (suit)
+        {
+            case CardSuit.Diamond:
+                return 1;
+            case CardSuit.Club:
+                return 2;
+            case CardSuit.Heart:
+                return 3;
+            case CardSuit.Spade:
+                return 4;
+        }
+        return 0;
     }
 }
 
@@ -81,9 +97,9 @@ public class CardEvent : UnityEvent<GameObject, Card>
 public enum CardSuit
 {
     Diamond = 0,
-    Club,
     Heart,
     Spade,
+    Club,
 }
 public static class CardSuixxtReaderWriterg
 {

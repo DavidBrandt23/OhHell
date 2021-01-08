@@ -45,7 +45,7 @@ public class GameManager : NetworkBehaviour
     {
         cardsInCenter = new List<Card>();
         SetLeadingSuit(null);
-        CurrentRoundCardNum = 5; //0 for final version
+        CurrentRoundCardNum = 0; //0 for final version
         TricksPlayedThisRound = 0;
     }
 
@@ -395,12 +395,13 @@ public class GameManager : NetworkBehaviour
                 roundFirstLeader = 0;
             }
 
-            float timeForRoundScores = 5.0f;
+            float timeForRoundScores = 4.0f;
             float roundStartDelay = timeForRoundScores;
             float halfTimeLength = NumPlayers() + 5.0f;
 
             bool doHalfTime = CurrentRoundCardNum == MaxHand;
             bool startAnotherRound = !IsIndianRound;
+            bool doGameEnd = !startAnotherRound;
             if (doHalfTime)
             {
                 this.StartCoroutine(() =>
@@ -409,26 +410,25 @@ public class GameManager : NetworkBehaviour
                 }, timeForRoundScores);
                 roundStartDelay += halfTimeLength;
             }
-
-            if (startAnotherRound)
-            {
-                this.StartCoroutine(() =>
-                {
-                    StartPostRound();
-                }, 0.2f);
-
-                this.StartCoroutine(() =>
-                {
-                    StartRound();
-                }, roundStartDelay);
-            }
-            else
+            if (doGameEnd)
             {
                 //game end
                 this.StartCoroutine(() =>
                 {
                     InitiateScoreboard(false);
                 }, timeForRoundScores);
+            }
+            this.StartCoroutine(() =>
+            {
+                StartPostRound();
+            }, 0.2f);
+
+            if (startAnotherRound)
+            {
+                this.StartCoroutine(() =>
+                {
+                    StartRound();
+                }, roundStartDelay);
             }
         }
         else

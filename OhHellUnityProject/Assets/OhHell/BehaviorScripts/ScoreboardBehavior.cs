@@ -84,7 +84,7 @@ public class ScoreboardBehavior : MonoBehaviour
             ScoreBoardPlayerBehavior scoreboardPlayer = newPlayerOb.GetComponent<ScoreBoardPlayerBehavior>();
             int placement = GetPlacement(i, scoreList);
             scoreboardPlayer.SetUI(placement, scoreList[i].playerName, scoreList[i].score);
-            newPlayerOb.transform.localPosition = new Vector3(0.0f, 16.0f + i * -5.0f, 0.0f);
+            newPlayerOb.transform.localPosition = new Vector3(0.0f, 16.0f + i * -5.5f, 0.0f);
         }
 
         HalfTimeTitleObject.SetActive(isHalfTime);

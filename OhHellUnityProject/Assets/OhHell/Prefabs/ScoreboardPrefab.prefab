@@ -133,7 +133,7 @@ MonoBehaviour:
   ScoreBoardPlayerPrefab: {fileID: 4539518840485143133, guid: 0c4a653503b2db8419dd60c5fa728de0,
     type: 3}
   halfTimeSound: {fileID: 8300000, guid: f47776a08e39215408ad3f3879816d9f, type: 3}
-  endGameSound: {fileID: 8300000, guid: 74bf64d34d76f4d408b3c7af8014b4af, type: 3}
+  endGameSound: {fileID: 8300000, guid: 565d05b0951a6ac47a636e13067af414, type: 3}
   HalfTimeTitleObject: {fileID: 3369704885191347271}
   FinalScoreTitleObject: {fileID: 5458688785631183178}
 --- !u!82 &731803842356087569
