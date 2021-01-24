@@ -22,7 +22,7 @@ public class MainMenuBehavior : MonoBehaviour
         }
         if (DefaultToDavidIP)
         {
-            ipField.text = "24.196.35.248";
+            ipField.text = "172.220.105.134";
         }
 
         if (Application.platform == RuntimePlatform.WebGLPlayer)

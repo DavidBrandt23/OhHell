@@ -444,7 +444,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugMode: 0
-  DefaultToDavidIP: 0
+  DefaultToDavidIP: 1
   nameField: {fileID: 2040573273}
   ipField: {fileID: 1522031102}
   joinHostSelBeh: {fileID: 580109131}
@@ -1326,7 +1326,6 @@ GameObject:
   - component: {fileID: 1886246552}
   - component: {fileID: 1886246551}
   - component: {fileID: 1886246554}
-  - component: {fileID: 1886246553}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -1401,50 +1400,6 @@ MonoBehaviour:
   PlayerNameField: {fileID: 2040573273}
   MainMenuObject: {fileID: 858878539}
   localPlayerName: 
---- !u!114 &1886246553
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1886246549}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnClientConnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientDataReceived:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientError:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientDisconnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerConnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerDataReceived:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerError:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerDisconnected:
-    m_PersistentCalls:
-      m_Calls: []
-  Port: 7777
-  NoDelay: 1
-  Interval: 10
-  FastResend: 0
-  CongestionWindow: 1
-  SendWindowSize: 128
-  ReceiveWindowSize: 128
-  debugGUI: 0
 --- !u!114 &1886246554
 MonoBehaviour:
   m_ObjectHideFlags: 0
